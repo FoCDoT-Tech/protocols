@@ -1,0 +1,41 @@
+graph TB
+    subgraph "IPv4 Packet Structure"
+        A[Version: 4] --> B[Header Length: 5-15]
+        B --> C[Type of Service: 8 bits]
+        C --> D[Total Length: 16 bits]
+        D --> E[Identification: 16 bits]
+        E --> F[Flags: 3 bits]
+        F --> G[Fragment Offset: 13 bits]
+        G --> H[TTL: 8 bits]
+        H --> I[Protocol: 8 bits]
+        I --> J[Header Checksum: 16 bits]
+        J --> K[Source IP: 32 bits]
+        K --> L[Destination IP: 32 bits]
+        L --> M[Options: Variable]
+        M --> N[Data Payload]
+    end
+    
+    subgraph "IPv6 Packet Structure"
+        O[Version: 4] --> P[Traffic Class: 8 bits]
+        P --> Q[Flow Label: 20 bits]
+        Q --> R[Payload Length: 16 bits]
+        R --> S[Next Header: 8 bits]
+        S --> T[Hop Limit: 8 bits]
+        T --> U[Source IP: 128 bits]
+        U --> V[Destination IP: 128 bits]
+        V --> W[Data Payload]
+    end
+    
+    subgraph "Address Comparison"
+        X[IPv4: 192.168.1.1<br/>32 bits<br/>4.3B addresses] 
+        Y[IPv6: 2001:db8::1<br/>128 bits<br/>340 undecillion addresses]
+    end
+    
+    subgraph "Routing Process"
+        Z[Packet Arrives] --> AA{Check Destination}
+        AA -->|Local Network| BB[Direct Delivery]
+        AA -->|Remote Network| CC[Forward to Gateway]
+        CC --> DD[Route Table Lookup]
+        DD --> EE[Next Hop Selection]
+        EE --> FF[Packet Forwarded]
+    end

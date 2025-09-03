@@ -1,0 +1,28 @@
+graph TB
+    subgraph "ICMP Message Types"
+        A[Echo Request<br/>Type 8] --> B[Echo Reply<br/>Type 0]
+        C[Destination Unreachable<br/>Type 3] --> D[Time Exceeded<br/>Type 11]
+        E[Redirect<br/>Type 5] --> F[Parameter Problem<br/>Type 12]
+    end
+    
+    subgraph "ICMPv6 Message Types"
+        G[Echo Request<br/>Type 128] --> H[Echo Reply<br/>Type 129]
+        I[Destination Unreachable<br/>Type 1] --> J[Packet Too Big<br/>Type 2]
+        K[Time Exceeded<br/>Type 3] --> L[Parameter Problem<br/>Type 4]
+        M[Neighbor Solicitation<br/>Type 135] --> N[Neighbor Advertisement<br/>Type 136]
+    end
+    
+    subgraph "ICMP Packet Structure"
+        O[Type: 8 bits] --> P[Code: 8 bits]
+        P --> Q[Checksum: 16 bits]
+        Q --> R[Rest of Header: 32 bits]
+        R --> S[Data Section: Variable]
+    end
+    
+    subgraph "Ping Process Flow"
+        T[Send Echo Request] --> U{Destination Reachable?}
+        U -->|Yes| V[Receive Echo Reply]
+        U -->|No| W[Receive Destination Unreachable]
+        V --> X[Calculate RTT]
+        W --> Y[Report Network Error]
+    end

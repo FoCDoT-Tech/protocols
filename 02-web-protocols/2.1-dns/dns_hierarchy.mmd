@@ -1,0 +1,37 @@
+graph TB
+    subgraph "DNS Hierarchy"
+        A[Root Servers] --> B[TLD Servers (.com)]
+        B --> C[Authoritative Servers (example.com)]
+        C --> D[Resource Records (A, AAAA, CNAME, MX)]
+    end
+    
+    subgraph "DNS Query Process"
+        E[Client: www.example.com] --> F[Recursive Resolver]
+        F --> G[Root Server Query]
+        G --> H[TLD Server Query]
+        H --> I[Authoritative Server Query]
+        I --> J[IP Address Response]
+        J --> E
+    end
+    
+    subgraph "DNS Record Types"
+        K[A Record: IPv4 Address] --> L[192.0.2.1]
+        M[AAAA Record: IPv6 Address] --> N[2001:db8::1]
+        O[CNAME Record: Alias] --> P[www → example.com]
+        Q[MX Record: Mail Exchange] --> R[mail.example.com]
+        S[NS Record: Name Server] --> T[ns1.example.com]
+    end
+    
+    subgraph "DNS Caching Layers"
+        U[Browser Cache] --> V[OS Cache]
+        V --> W[ISP Cache]
+        W --> X[Recursive Resolver Cache]
+        X --> Y[Authoritative Server]
+    end
+    
+    subgraph "DNS Security"
+        Z[DNSSEC Validation] --> AA[Digital Signatures]
+        BB[DNS over HTTPS] --> CC[Encrypted Queries]
+        DD[DNS over TLS] --> EE[Secure Transport]
+        FF[DNS Filtering] --> GG[Malware Protection]
+    end

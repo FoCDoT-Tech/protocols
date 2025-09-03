@@ -1,0 +1,36 @@
+graph TB
+    subgraph "TCP Three-Way Handshake"
+        A[Client] -->|1. SYN seq=x| B[Server]
+        B -->|2. SYN-ACK seq=y, ack=x+1| A
+        A -->|3. ACK seq=x+1, ack=y+1| B
+        B --> C[Connection Established]
+    end
+    
+    subgraph "TCP Header Structure"
+        D[Source Port: 16 bits] --> E[Destination Port: 16 bits]
+        E --> F[Sequence Number: 32 bits]
+        F --> G[Acknowledgment Number: 32 bits]
+        G --> H[Header Length: 4 bits]
+        H --> I[Flags: 9 bits]
+        I --> J[Window Size: 16 bits]
+        J --> K[Checksum: 16 bits]
+        K --> L[Urgent Pointer: 16 bits]
+        L --> M[Options: Variable]
+        M --> N[Data: Variable]
+    end
+    
+    subgraph "TCP Connection States"
+        O[CLOSED] --> P[LISTEN]
+        P --> Q[SYN-RECEIVED]
+        Q --> R[ESTABLISHED]
+        R --> S[FIN-WAIT-1]
+        S --> T[CLOSED]
+    end
+    
+    subgraph "Flow Control & Congestion"
+        U[Sliding Window] --> V[Congestion Window]
+        V --> W[Slow Start]
+        W --> X[Congestion Avoidance]
+        X --> Y[Fast Retransmit]
+        Y --> Z[Fast Recovery]
+    end

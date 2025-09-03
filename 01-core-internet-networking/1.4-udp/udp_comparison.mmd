@@ -1,0 +1,40 @@
+graph TB
+    subgraph "UDP vs TCP Comparison"
+        A[UDP: Connectionless] --> B[No Handshake Required]
+        C[TCP: Connection-oriented] --> D[Three-way Handshake]
+        B --> E[Lower Latency]
+        D --> F[Higher Latency]
+        E --> G[Best for Real-time Apps]
+        F --> H[Best for Reliable Transfer]
+    end
+    
+    subgraph "UDP Header Structure"
+        I[Source Port: 16 bits] --> J[Destination Port: 16 bits]
+        J --> K[Length: 16 bits]
+        K --> L[Checksum: 16 bits]
+        L --> M[Data: Variable Length]
+        N[Total Header: 8 bytes] --> I
+    end
+    
+    subgraph "UDP Use Cases"
+        O[DNS Queries] --> P[Fast Name Resolution]
+        Q[Video Streaming] --> R[Real-time Delivery]
+        S[Online Gaming] --> T[Low Latency Updates]
+        U[VoIP Calls] --> V[Voice Communication]
+        W[DHCP] --> X[Network Configuration]
+    end
+    
+    subgraph "UDP Packet Flow"
+        Y[Application Data] --> Z[Add UDP Header]
+        Z --> AA[Add IP Header]
+        AA --> BB[Transmit Packet]
+        BB --> CC[No Acknowledgment Required]
+        CC --> DD[Fire and Forget]
+    end
+    
+    subgraph "UDP Characteristics"
+        EE[Unreliable Delivery] --> FF[No Guarantee of Arrival]
+        GG[No Flow Control] --> HH[Sender Controls Rate]
+        II[No Congestion Control] --> JJ[Application Responsibility]
+        KK[Minimal Overhead] --> LL[8-byte Header Only]
+    end

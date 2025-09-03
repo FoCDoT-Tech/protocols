@@ -1,0 +1,43 @@
+graph TB
+    subgraph "QUIC vs TCP+TLS Architecture"
+        A[QUIC: Single Protocol] --> B[Transport + Security Combined]
+        C[TCP+TLS: Layered] --> D[Separate Transport & Security]
+        B --> E[1-RTT Handshake]
+        D --> F[3-RTT Handshake]
+    end
+    
+    subgraph "QUIC Stream Multiplexing"
+        G[Connection] --> H[Stream 0: Control]
+        G --> I[Stream 4: Video]
+        G --> J[Stream 8: Audio]
+        G --> K[Stream 12: Chat]
+        L[Independent Flow Control] --> H
+        L --> I
+        L --> J
+        L --> K
+    end
+    
+    subgraph "QUIC Connection Migration"
+        M[Client WiFi: 192.168.1.100] --> N[Connection ID: ABC123]
+        O[Client Cellular: 10.0.0.50] --> N
+        N --> P[Server: 203.0.113.1]
+        Q[Seamless Handover] --> M
+        Q --> O
+    end
+    
+    subgraph "QUIC Packet Structure"
+        R[Header Form: 1 bit] --> S[Fixed Bit: 1 bit]
+        S --> T[Packet Type: 2 bits]
+        T --> U[Connection ID Length: 4 bits]
+        U --> V[Connection ID: Variable]
+        V --> W[Packet Number: Variable]
+        W --> X[Encrypted Payload]
+        X --> Y[Authentication Tag]
+    end
+    
+    subgraph "QUIC Performance Benefits"
+        Z[0-RTT Resumption] --> AA[Instant Connection]
+        BB[No Head-of-Line Blocking] --> CC[Stream Independence]
+        DD[Built-in Encryption] --> EE[Mandatory Security]
+        FF[Connection Migration] --> GG[Mobile Optimization]
+    end
