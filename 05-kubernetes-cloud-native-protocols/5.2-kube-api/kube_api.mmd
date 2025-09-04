@@ -1,0 +1,79 @@
+graph TB
+    subgraph "Client Layer"
+        KUBECTL[kubectl CLI]
+        HELM[Helm Charts]
+        CI[CI/CD Pipelines]
+        CUSTOM[Custom Controllers]
+    end
+    
+    subgraph "API Server Layer"
+        LB[Load Balancer]
+        
+        subgraph "API Server Instance"
+            TLS[TLS Termination]
+            AUTH[Authentication]
+            AUTHZ[Authorization]
+            ADMIT[Admission Control]
+            VALID[Validation]
+            STORAGE[Storage Layer]
+        end
+        
+        subgraph "API Groups"
+            CORE[Core API (/api/v1)]
+            APPS[Apps API (/apis/apps/v1)]
+            RBAC_API[RBAC API (/apis/rbac.authorization.k8s.io/v1)]
+            CUSTOM_API[Custom APIs (/apis/custom.io/v1)]
+        end
+    end
+    
+    subgraph "Storage Backend"
+        ETCD[etcd Cluster]
+    end
+    
+    subgraph "Resource Types"
+        PODS[Pods]
+        SERVICES[Services]
+        DEPLOYMENTS[Deployments]
+        CONFIGMAPS[ConfigMaps]
+        SECRETS[Secrets]
+        CRD[Custom Resources]
+    end
+    
+    KUBECTL -->|HTTPS/JSON| LB
+    HELM -->|HTTPS/JSON| LB
+    CI -->|HTTPS/JSON| LB
+    CUSTOM -->|HTTPS/JSON| LB
+    
+    LB --> TLS
+    TLS --> AUTH
+    AUTH --> AUTHZ
+    AUTHZ --> ADMIT
+    ADMIT --> VALID
+    VALID --> STORAGE
+    
+    STORAGE --> CORE
+    STORAGE --> APPS
+    STORAGE --> RBAC_API
+    STORAGE --> CUSTOM_API
+    
+    CORE --> ETCD
+    APPS --> ETCD
+    RBAC_API --> ETCD
+    CUSTOM_API --> ETCD
+    
+    CORE -.-> PODS
+    CORE -.-> SERVICES
+    CORE -.-> CONFIGMAPS
+    CORE -.-> SECRETS
+    APPS -.-> DEPLOYMENTS
+    CUSTOM_API -.-> CRD
+    
+    classDef client fill:#99ff99
+    classDef api fill:#99ccff
+    classDef storage fill:#ffcc99
+    classDef resource fill:#ff9999
+    
+    class KUBECTL,HELM,CI,CUSTOM client
+    class LB,TLS,AUTH,AUTHZ,ADMIT,VALID,STORAGE,CORE,APPS,RBAC_API,CUSTOM_API api
+    class ETCD storage
+    class PODS,SERVICES,DEPLOYMENTS,CONFIGMAPS,SECRETS,CRD resource

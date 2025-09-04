@@ -1,0 +1,99 @@
+graph TB
+    subgraph "Kubernetes Control Plane"
+        api_server[API Server]
+        scheduler[Scheduler]
+        controller_manager[Controller Manager]
+        
+        subgraph "CSI Controllers"
+            external_provisioner[External Provisioner]
+            external_attacher[External Attacher]
+            external_snapshotter[External Snapshotter]
+            external_resizer[External Resizer]
+        end
+    end
+    
+    subgraph "Kubernetes Node"
+        kubelet[kubelet]
+        
+        subgraph "CSI Driver Pod"
+            csi_controller[CSI Controller<br/>Service]
+            csi_node[CSI Node<br/>Service]
+            csi_identity[CSI Identity<br/>Service]
+        end
+        
+        subgraph "Volume Management"
+            volume_manager[Volume Manager]
+            device_manager[Device Manager]
+            mount_manager[Mount Manager]
+        end
+        
+        subgraph "Pod Filesystem"
+            pod_a[Pod A<br/>Volume Mount]
+            pod_b[Pod B<br/>Volume Mount]
+            staged_volumes[Staged Volumes<br/>/var/lib/kubelet/plugins]
+        end
+    end
+    
+    subgraph "Storage Backend"
+        cloud_storage[Cloud Storage<br/>AWS EBS, GCP PD]
+        network_storage[Network Storage<br/>NFS, iSCSI]
+        local_storage[Local Storage<br/>HostPath, LocalPV]
+    end
+    
+    subgraph "CSI gRPC Communication"
+        grpc_identity[Identity Service<br/>GetPluginInfo, Probe]
+        grpc_controller[Controller Service<br/>CreateVolume, DeleteVolume]
+        grpc_node[Node Service<br/>NodeStageVolume, NodePublishVolume]
+    end
+    
+    %% Control Plane Flow
+    api_server --> external_provisioner
+    api_server --> external_attacher
+    api_server --> external_snapshotter
+    api_server --> external_resizer
+    
+    %% CSI Controller Communication
+    external_provisioner --> grpc_controller
+    external_attacher --> grpc_controller
+    external_snapshotter --> grpc_controller
+    external_resizer --> grpc_controller
+    
+    %% Node Communication
+    kubelet --> volume_manager
+    volume_manager --> grpc_node
+    grpc_node --> csi_node
+    
+    %% Identity Service
+    external_provisioner --> grpc_identity
+    kubelet --> grpc_identity
+    grpc_identity --> csi_identity
+    
+    %% Volume Lifecycle
+    grpc_controller --> csi_controller
+    csi_controller --> cloud_storage
+    csi_controller --> network_storage
+    
+    %% Node Volume Operations
+    csi_node --> device_manager
+    device_manager --> staged_volumes
+    staged_volumes --> mount_manager
+    mount_manager --> pod_a
+    mount_manager --> pod_b
+    
+    %% Storage Backend Connections
+    csi_node --> local_storage
+    device_manager --> cloud_storage
+    device_manager --> network_storage
+    
+    %% Styling
+    classDef controlPlaneStyle fill:#e1f5fe,stroke:#01579b,stroke-width:2px
+    classDef csiStyle fill:#fff3e0,stroke:#e65100,stroke-width:2px
+    classDef nodeStyle fill:#f3e5f5,stroke:#4a148c,stroke-width:2px
+    classDef storageStyle fill:#e8f5e8,stroke:#1b5e20,stroke-width:2px
+    classDef grpcStyle fill:#ffebee,stroke:#b71c1c,stroke-width:2px
+    
+    class api_server,scheduler,controller_manager,external_provisioner,external_attacher,external_snapshotter,external_resizer controlPlaneStyle
+    class csi_controller,csi_node,csi_identity csiStyle
+    class kubelet,volume_manager,device_manager,mount_manager,pod_a,pod_b,staged_volumes nodeStyle
+    class cloud_storage,network_storage,local_storage storageStyle
+    class grpc_identity,grpc_controller,grpc_node grpcStyle

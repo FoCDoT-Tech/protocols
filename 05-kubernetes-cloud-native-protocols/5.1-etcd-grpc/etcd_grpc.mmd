@@ -1,0 +1,68 @@
+graph TB
+    subgraph "Kubernetes Control Plane"
+        API[API Server]
+        CTRL[Controllers]
+        SCHED[Scheduler]
+    end
+    
+    subgraph "etcd Cluster (Raft)"
+        subgraph "etcd Node 1 (Leader)"
+            GRPC1[gRPC Server]
+            RAFT1[Raft Engine]
+            KV1[KV Store]
+            WAL1[Write-Ahead Log]
+        end
+        
+        subgraph "etcd Node 2 (Follower)"
+            GRPC2[gRPC Server]
+            RAFT2[Raft Engine]
+            KV2[KV Store]
+            WAL2[Write-Ahead Log]
+        end
+        
+        subgraph "etcd Node 3 (Follower)"
+            GRPC3[gRPC Server]
+            RAFT3[Raft Engine]
+            KV3[KV Store]
+            WAL3[Write-Ahead Log]
+        end
+    end
+    
+    subgraph "Client Operations"
+        PUT[Put Request]
+        GET[Get Request]
+        WATCH[Watch Stream]
+        TXN[Transaction]
+    end
+    
+    API -->|gRPC/HTTP2| GRPC1
+    CTRL -->|gRPC/HTTP2| GRPC1
+    SCHED -->|gRPC/HTTP2| GRPC1
+    
+    GRPC1 --> RAFT1
+    RAFT1 --> KV1
+    RAFT1 --> WAL1
+    
+    RAFT1 -.->|Log Replication| RAFT2
+    RAFT1 -.->|Log Replication| RAFT3
+    
+    RAFT2 --> KV2
+    RAFT2 --> WAL2
+    RAFT3 --> KV3
+    RAFT3 --> WAL3
+    
+    PUT --> GRPC1
+    GET --> GRPC1
+    WATCH --> GRPC1
+    TXN --> GRPC1
+    
+    GRPC1 -.->|Read-only| GRPC2
+    GRPC1 -.->|Read-only| GRPC3
+    
+    classDef leader fill:#ff9999
+    classDef follower fill:#99ccff
+    classDef client fill:#99ff99
+    
+    class GRPC1,RAFT1,KV1,WAL1 leader
+    class GRPC2,RAFT2,KV2,WAL2,GRPC3,RAFT3,KV3,WAL3 follower
+    class PUT,GET,WATCH,TXN client

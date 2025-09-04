@@ -1,0 +1,88 @@
+graph TB
+    subgraph "Kubernetes Node"
+        subgraph "Container Runtime"
+            kubelet[kubelet]
+            cri[Container Runtime<br/>containerd/cri-o]
+        end
+        
+        subgraph "CNI Plugin Chain"
+            cni_main[Main CNI Plugin<br/>bridge/calico/flannel]
+            cni_ipam[IPAM Plugin<br/>host-local/dhcp]
+            cni_meta[Meta Plugins<br/>portmap/bandwidth]
+        end
+        
+        subgraph "Network Namespaces"
+            host_ns[Host Network<br/>Namespace]
+            pod_ns1[Pod A Network<br/>Namespace]
+            pod_ns2[Pod B Network<br/>Namespace]
+            pod_ns3[Pod C Network<br/>Namespace]
+        end
+        
+        subgraph "Network Interfaces"
+            host_eth[eth0<br/>Host Interface]
+            cni_bridge[cni0<br/>Bridge Interface]
+            veth1[veth-pod-a]
+            veth2[veth-pod-b]
+            veth3[veth-pod-c]
+        end
+        
+        subgraph "Pod Network"
+            pod_a[Pod A<br/>10.244.1.2/24]
+            pod_b[Pod B<br/>10.244.1.3/24]
+            pod_c[Pod C<br/>10.244.2.2/24]
+        end
+    end
+    
+    subgraph "External Network"
+        internet[Internet]
+        vpc[VPC/Cloud Network]
+        other_nodes[Other Kubernetes<br/>Nodes]
+    end
+    
+    %% CNI Plugin Chain Flow
+    kubelet --> cni_main
+    cni_main --> cni_ipam
+    cni_ipam --> cni_meta
+    
+    %% Network Interface Creation
+    cni_main --> cni_bridge
+    cni_main --> veth1
+    cni_main --> veth2
+    cni_main --> veth3
+    
+    %% Network Namespace Assignment
+    veth1 --> pod_ns1
+    veth2 --> pod_ns2
+    veth3 --> pod_ns3
+    
+    %% Pod Network Assignment
+    pod_ns1 --> pod_a
+    pod_ns2 --> pod_b
+    pod_ns3 --> pod_c
+    
+    %% Bridge Connections
+    cni_bridge --> veth1
+    cni_bridge --> veth2
+    cni_bridge --> veth3
+    
+    %% Host Network
+    host_ns --> host_eth
+    host_ns --> cni_bridge
+    
+    %% External Connectivity
+    host_eth --> vpc
+    vpc --> internet
+    vpc --> other_nodes
+    
+    %% Styling
+    classDef kubeletStyle fill:#e1f5fe,stroke:#01579b,stroke-width:2px
+    classDef cniStyle fill:#fff3e0,stroke:#e65100,stroke-width:2px
+    classDef networkStyle fill:#f3e5f5,stroke:#4a148c,stroke-width:2px
+    classDef podStyle fill:#e8f5e8,stroke:#1b5e20,stroke-width:2px
+    classDef externalStyle fill:#ffebee,stroke:#b71c1c,stroke-width:2px
+    
+    class kubelet,cri kubeletStyle
+    class cni_main,cni_ipam,cni_meta cniStyle
+    class host_ns,pod_ns1,pod_ns2,pod_ns3,host_eth,cni_bridge,veth1,veth2,veth3 networkStyle
+    class pod_a,pod_b,pod_c podStyle
+    class internet,vpc,other_nodes externalStyle

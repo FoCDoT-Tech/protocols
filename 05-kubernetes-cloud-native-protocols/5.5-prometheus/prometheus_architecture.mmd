@@ -1,0 +1,88 @@
+graph TB
+    subgraph "Kubernetes Cluster"
+        subgraph "Application Services"
+            service_a[Service A<br/>/metrics endpoint]
+            service_b[Service B<br/>/metrics endpoint]
+            service_c[Service C<br/>/metrics endpoint]
+            service_d[Service D<br/>/metrics endpoint]
+        end
+        
+        subgraph "Infrastructure Components"
+            node_exporter[Node Exporter<br/>System Metrics]
+            kube_state[Kube State Metrics<br/>K8s Object Metrics]
+            cadvisor[cAdvisor<br/>Container Metrics]
+        end
+        
+        subgraph "Prometheus Server"
+            service_discovery[Service Discovery<br/>K8s API, Consul, DNS]
+            scrape_engine[Scrape Engine<br/>HTTP/1.1 Collector]
+            storage_engine[Storage Engine<br/>Time Series DB]
+            query_engine[Query Engine<br/>PromQL Processor]
+            rule_engine[Rule Engine<br/>Recording & Alerting]
+        end
+        
+        subgraph "Alerting System"
+            alertmanager[Alertmanager<br/>Alert Routing]
+            notification[Notification<br/>Slack, Email, PagerDuty]
+        end
+        
+        subgraph "Visualization"
+            grafana[Grafana<br/>Dashboards]
+            prometheus_ui[Prometheus UI<br/>Query Interface]
+        end
+    end
+    
+    subgraph "External Systems"
+        remote_storage[Remote Storage<br/>Cortex, Thanos]
+        federation[Federation<br/>Cross-cluster]
+    end
+    
+    %% Service Discovery Flow
+    service_discovery --> service_a
+    service_discovery --> service_b
+    service_discovery --> service_c
+    service_discovery --> service_d
+    service_discovery --> node_exporter
+    service_discovery --> kube_state
+    service_discovery --> cadvisor
+    
+    %% Scraping Flow
+    scrape_engine --> service_a
+    scrape_engine --> service_b
+    scrape_engine --> service_c
+    scrape_engine --> service_d
+    scrape_engine --> node_exporter
+    scrape_engine --> kube_state
+    scrape_engine --> cadvisor
+    
+    %% Internal Prometheus Flow
+    scrape_engine --> storage_engine
+    storage_engine --> query_engine
+    storage_engine --> rule_engine
+    
+    %% Alerting Flow
+    rule_engine --> alertmanager
+    alertmanager --> notification
+    
+    %% Query Flow
+    query_engine --> grafana
+    query_engine --> prometheus_ui
+    
+    %% External Integration
+    storage_engine --> remote_storage
+    query_engine --> federation
+    
+    %% Styling
+    classDef serviceStyle fill:#e8f5e8,stroke:#1b5e20,stroke-width:2px
+    classDef infraStyle fill:#fff3e0,stroke:#e65100,stroke-width:2px
+    classDef prometheusStyle fill:#e1f5fe,stroke:#01579b,stroke-width:2px
+    classDef alertStyle fill:#ffebee,stroke:#b71c1c,stroke-width:2px
+    classDef visualStyle fill:#f3e5f5,stroke:#4a148c,stroke-width:2px
+    classDef externalStyle fill:#f5f5f5,stroke:#424242,stroke-width:2px
+    
+    class service_a,service_b,service_c,service_d serviceStyle
+    class node_exporter,kube_state,cadvisor infraStyle
+    class service_discovery,scrape_engine,storage_engine,query_engine,rule_engine prometheusStyle
+    class alertmanager,notification alertStyle
+    class grafana,prometheus_ui visualStyle
+    class remote_storage,federation externalStyle
