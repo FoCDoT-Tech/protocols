@@ -1,0 +1,91 @@
+graph TB
+    subgraph "Client Applications"
+        A[Web Applications]
+        B[Mobile Apps]
+        C[Analytics Platforms]
+        D[Backup Services]
+    end
+    
+    subgraph "S3 API Layer"
+        E[REST API Gateway]
+        F[Authentication Service<br/>AWS Signature V4]
+        G[Request Router]
+        H[Rate Limiting]
+    end
+    
+    subgraph "S3 Operations"
+        I[Bucket Operations<br/>Create/Delete/List]
+        J[Object Operations<br/>PUT/GET/DELETE]
+        K[Multipart Upload<br/>Large Files]
+        L[Access Control<br/>Policies/ACLs]
+    end
+    
+    subgraph "Storage Classes"
+        M[S3 Standard<br/>Frequent Access]
+        N[S3 Standard-IA<br/>Infrequent Access]
+        O[S3 Glacier<br/>Archive Storage]
+        P[S3 Deep Archive<br/>Long-term Backup]
+    end
+    
+    subgraph "Data Management"
+        Q[Lifecycle Policies]
+        R[Versioning & Encryption]
+        S[Cross-Region Replication]
+        T[Analytics & Monitoring]
+    end
+    
+    subgraph "Infrastructure"
+        U[Load Balancers]
+        V[CDN Integration]
+        W[Storage Backend]
+        X[Backup Systems]
+    end
+    
+    %% Client connections
+    A --> E
+    B --> E
+    C --> E
+    D --> E
+    
+    %% API processing
+    E --> F
+    F --> G
+    G --> H
+    
+    %% Operations routing
+    H --> I
+    H --> J
+    H --> K
+    H --> L
+    
+    %% Storage tier routing
+    I --> M
+    J --> M
+    J --> N
+    K --> M
+    L --> O
+    L --> P
+    
+    %% Data management
+    M --> Q
+    N --> Q
+    O --> R
+    P --> R
+    Q --> S
+    R --> T
+    
+    %% Infrastructure
+    E --> U
+    U --> V
+    M --> W
+    W --> X
+    
+    %% Styling
+    style I fill:#e1f5fe,stroke:#01579b
+    style J fill:#e8f5e8,stroke:#2e7d32
+    style K fill:#fff3e0,stroke:#ef6c00
+    style L fill:#fce4ec,stroke:#c2185b
+    style M fill:#f3e5f5,stroke:#7b1fa2
+    style N fill:#e0f2f1,stroke:#00695c
+    style O fill:#ffebee,stroke:#d32f2f
+    style P fill:#f1f8e9,stroke:#689f38

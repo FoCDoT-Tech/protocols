@@ -1,0 +1,112 @@
+graph TB
+    subgraph "Client Applications"
+        A[IoT Gateway]
+        B[Analytics Platform]
+        C[Real-time Dashboard]
+        D[Data Pipeline]
+    end
+    
+    subgraph "Cassandra Drivers"
+        E[Java Driver]
+        F[Python Driver]
+        G[Go Driver]
+        H[Node.js Driver]
+    end
+    
+    subgraph "CQL Protocol Operations"
+        I[STARTUP<br/>Connection Init]
+        J[QUERY<br/>Simple Query]
+        K[PREPARE<br/>Prepare Statement]
+        L[EXECUTE<br/>Execute Prepared]
+        M[BATCH<br/>Atomic Operations]
+        N[REGISTER<br/>Event Subscription]
+    end
+    
+    subgraph "Cassandra Cluster"
+        subgraph "US-East Datacenter"
+            O[Node 1<br/>Token: -9223...808]
+            P[Node 2<br/>Token: -6148...205]
+            Q[Node 3<br/>Token: -3074...602]
+        end
+        
+        subgraph "US-West Datacenter"
+            R[Node 4<br/>Token: 1...603]
+            S[Node 5<br/>Token: 3074...206]
+            T[Node 6<br/>Token: 6148...807]
+        end
+    end
+    
+    subgraph "Storage & Replication"
+        U[SSTables<br/>Immutable Files]
+        V[Commit Log<br/>Write-Ahead Log]
+        W[Memtables<br/>In-Memory]
+        X[Compaction<br/>Background Process]
+    end
+    
+    subgraph "Cluster Management"
+        Y[Gossip Protocol<br/>Node Discovery]
+        Z[Snitch<br/>Topology Awareness]
+        AA[Repair<br/>Anti-Entropy]
+        BB[Load Balancer<br/>Token Distribution]
+    end
+    
+    %% Client to Driver connections
+    A --> E
+    B --> F
+    C --> G
+    D --> H
+    
+    %% Driver to Protocol operations
+    E --> I
+    F --> J
+    G --> K
+    H --> L
+    
+    %% Protocol operations to cluster
+    I --> O
+    J --> P
+    K --> Q
+    L --> R
+    M --> S
+    N --> T
+    
+    %% Cross-datacenter replication
+    O -.->|Replication| R
+    P -.->|Replication| S
+    Q -.->|Replication| T
+    
+    %% Storage layer
+    O --> U
+    P --> V
+    Q --> W
+    R --> U
+    S --> V
+    T --> W
+    
+    %% Background processes
+    U --> X
+    V --> X
+    W --> X
+    
+    %% Cluster management
+    O --> Y
+    P --> Y
+    Q --> Y
+    R --> Y
+    S --> Y
+    T --> Y
+    
+    Y --> Z
+    Y --> AA
+    Y --> BB
+    
+    %% Styling
+    style I fill:#e1f5fe,stroke:#01579b
+    style J fill:#e8f5e8,stroke:#2e7d32
+    style K fill:#fff3e0,stroke:#ef6c00
+    style L fill:#fce4ec,stroke:#c2185b
+    style M fill:#f3e5f5,stroke:#7b1fa2
+    style N fill:#e0f2f1,stroke:#00695c
+    style O fill:#ffebee,stroke:#d32f2f
+    style R fill:#e3f2fd,stroke:#1976d2
+    style Y fill:#f1f8e9,stroke:#689f38

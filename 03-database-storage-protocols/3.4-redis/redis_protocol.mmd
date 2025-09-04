@@ -1,0 +1,89 @@
+graph TB
+    subgraph "Client Applications"
+        A[Web Application]
+        B[Session Manager]
+        C[Analytics Dashboard]
+        D[Rate Limiter]
+    end
+    
+    subgraph "Redis Clients"
+        E[Redis-py]
+        F[Jedis]
+        G[node_redis]
+        H[go-redis]
+    end
+    
+    subgraph "RESP Protocol Operations"
+        I[GET/SET<br/>Key-Value]
+        J[HGET/HSET<br/>Hash Fields]
+        K[LPUSH/RPOP<br/>Lists]
+        L[SADD/SMEMBERS<br/>Sets]
+        M[ZADD/ZRANGE<br/>Sorted Sets]
+        N[PUBLISH/SUBSCRIBE<br/>Messaging]
+    end
+    
+    subgraph "Redis Server"
+        O[Command Parser]
+        P[Data Structures]
+        Q[Memory Manager]
+        R[Persistence Engine]
+    end
+    
+    subgraph "Storage & Persistence"
+        S[RDB Snapshots]
+        T[AOF Log]
+        U[Memory Database]
+    end
+    
+    subgraph "Advanced Features"
+        V[Lua Scripts]
+        W[Transactions]
+        X[Streams]
+        Y[Modules]
+    end
+    
+    %% Client to Redis client connections
+    A --> E
+    B --> F
+    C --> G
+    D --> H
+    
+    %% Redis client to RESP operations
+    E --> I
+    F --> J
+    G --> K
+    H --> L
+    
+    %% RESP operations to server
+    I --> O
+    J --> O
+    K --> O
+    L --> O
+    M --> O
+    N --> O
+    
+    %% Server components
+    O --> P
+    P --> Q
+    Q --> R
+    
+    %% Storage layer
+    P --> U
+    R --> S
+    R --> T
+    
+    %% Advanced features
+    O --> V
+    O --> W
+    O --> X
+    O --> Y
+    
+    %% Styling
+    style I fill:#e1f5fe,stroke:#01579b
+    style J fill:#e8f5e8,stroke:#2e7d32
+    style K fill:#fff3e0,stroke:#ef6c00
+    style L fill:#fce4ec,stroke:#c2185b
+    style M fill:#f3e5f5,stroke:#7b1fa2
+    style N fill:#e0f2f1,stroke:#00695c
+    style O fill:#ffebee,stroke:#d32f2f
+    style V fill:#f1f8e9,stroke:#689f38

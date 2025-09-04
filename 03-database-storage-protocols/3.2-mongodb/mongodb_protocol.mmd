@@ -1,0 +1,118 @@
+graph TB
+    subgraph "MongoDB Client Applications"
+        A[Web Application]
+        B[Mobile Backend]
+        C[Analytics Service]
+        D[Microservice]
+    end
+    
+    subgraph "MongoDB Drivers"
+        E[Node.js Driver]
+        F[Python Driver]
+        G[Java Driver]
+        H[Go Driver]
+    end
+    
+    subgraph "MongoDB Wire Protocol Operations"
+        I[OP_MSG<br/>Modern Command]
+        J[OP_QUERY<br/>Legacy Query]
+        K[OP_INSERT<br/>Document Insert]
+        L[OP_UPDATE<br/>Document Update]
+        M[OP_DELETE<br/>Document Delete]
+        N[OP_REPLY<br/>Server Response]
+    end
+    
+    subgraph "MongoDB Cluster Architecture"
+        subgraph "Replica Set Primary"
+            O[Primary Node<br/>Read/Write]
+        end
+        
+        subgraph "Replica Set Secondaries"
+            P[Secondary 1<br/>Read Only]
+            Q[Secondary 2<br/>Read Only]
+        end
+        
+        subgraph "Sharded Cluster"
+            R[mongos Router]
+            S[Config Servers]
+            T[Shard 1]
+            U[Shard 2]
+            V[Shard 3]
+        end
+    end
+    
+    subgraph "Storage and Indexing"
+        W[WiredTiger<br/>Storage Engine]
+        X[B-Tree Indexes]
+        Y[Text Indexes]
+        Z[Geospatial Indexes]
+        AA[GridFS<br/>Large Files]
+    end
+    
+    subgraph "Advanced Features"
+        BB[Change Streams<br/>Real-time Events]
+        CC[Aggregation Pipeline<br/>Data Processing]
+        DD[Transactions<br/>ACID Compliance]
+        EE[Atlas Search<br/>Full-text Search]
+    end
+    
+    %% Client to Driver connections
+    A --> E
+    B --> F
+    C --> G
+    D --> H
+    
+    %% Driver to Protocol operations
+    E --> I
+    F --> J
+    G --> K
+    H --> L
+    
+    %% Protocol operations flow
+    I --> O
+    J --> P
+    K --> O
+    L --> O
+    M --> O
+    O --> N
+    
+    %% Replica set replication
+    O -.->|Oplog Replication| P
+    O -.->|Oplog Replication| Q
+    
+    %% Sharded cluster routing
+    R --> T
+    R --> U
+    R --> V
+    S -.->|Metadata| R
+    
+    %% Storage layer
+    O --> W
+    P --> W
+    Q --> W
+    T --> W
+    U --> W
+    V --> W
+    
+    %% Indexing
+    W --> X
+    W --> Y
+    W --> Z
+    W --> AA
+    
+    %% Advanced features
+    O --> BB
+    O --> CC
+    O --> DD
+    W --> EE
+    
+    %% Styling
+    style I fill:#e1f5fe,stroke:#01579b
+    style J fill:#e8f5e8,stroke:#2e7d32
+    style K fill:#fff3e0,stroke:#ef6c00
+    style L fill:#fce4ec,stroke:#c2185b
+    style M fill:#f3e5f5,stroke:#7b1fa2
+    style N fill:#e0f2f1,stroke:#00695c
+    style O fill:#ffebee,stroke:#d32f2f
+    style R fill:#e3f2fd,stroke:#1976d2
+    style W fill:#f1f8e9,stroke:#689f38

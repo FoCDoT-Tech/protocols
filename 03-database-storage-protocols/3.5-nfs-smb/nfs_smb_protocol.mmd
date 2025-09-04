@@ -1,0 +1,91 @@
+graph TB
+    subgraph "Client Systems"
+        A[Linux Servers<br/>NFS Clients]
+        B[Windows Workstations<br/>SMB Clients]
+        C[macOS Clients<br/>SMB/NFS Support]
+    end
+    
+    subgraph "Network Layer"
+        D[TCP/UDP Transport]
+        E[RPC Layer<br/>NFS]
+        F[SMB Protocol<br/>Stack]
+    end
+    
+    subgraph "NFS Operations"
+        G[LOOKUP<br/>Path Resolution]
+        H[GETATTR<br/>File Metadata]
+        I[READ/WRITE<br/>Data Transfer]
+        J[READDIR<br/>Directory Listing]
+    end
+    
+    subgraph "SMB Operations"
+        K[NEGOTIATE<br/>Protocol Version]
+        L[SESSION_SETUP<br/>Authentication]
+        M[TREE_CONNECT<br/>Share Access]
+        N[CREATE/READ/WRITE<br/>File Operations]
+    end
+    
+    subgraph "File Server Cluster"
+        O[NFS Server<br/>NFSv4]
+        P[SMB Server<br/>SMB 3.0]
+        Q[Load Balancer]
+        R[High Availability]
+    end
+    
+    subgraph "Storage Backend"
+        S[Distributed Storage]
+        T[RAID Arrays]
+        U[Backup Systems]
+    end
+    
+    %% Client connections
+    A --> D
+    B --> D
+    C --> D
+    
+    %% Protocol layers
+    D --> E
+    D --> F
+    
+    %% NFS operations
+    E --> G
+    E --> H
+    E --> I
+    E --> J
+    
+    %% SMB operations
+    F --> K
+    F --> L
+    F --> M
+    F --> N
+    
+    %% Server connections
+    G --> O
+    H --> O
+    I --> O
+    J --> O
+    K --> P
+    L --> P
+    M --> P
+    N --> P
+    
+    %% High availability
+    O --> Q
+    P --> Q
+    Q --> R
+    
+    %% Storage layer
+    O --> S
+    P --> S
+    S --> T
+    R --> U
+    
+    %% Styling
+    style G fill:#e1f5fe,stroke:#01579b
+    style H fill:#e8f5e8,stroke:#2e7d32
+    style I fill:#fff3e0,stroke:#ef6c00
+    style J fill:#fce4ec,stroke:#c2185b
+    style K fill:#f3e5f5,stroke:#7b1fa2
+    style L fill:#e0f2f1,stroke:#00695c
+    style M fill:#ffebee,stroke:#d32f2f
+    style N fill:#f1f8e9,stroke:#689f38

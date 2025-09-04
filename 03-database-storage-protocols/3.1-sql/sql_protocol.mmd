@@ -1,0 +1,121 @@
+graph TB
+    subgraph "SQL Wire Protocol Architecture"
+        Client[📱 Database Client]
+        Driver[🔧 Database Driver]
+        ConnPool[🔄 Connection Pool]
+        Proxy[🔀 Database Proxy]
+        Primary[🗄️ Primary Database]
+        Replica[📖 Read Replica]
+        
+        subgraph "Protocol Stack"
+            App[🔧 Application Layer]
+            Wire[📡 Wire Protocol]
+            TCP[🌐 TCP Transport]
+            TLS[🔒 TLS Security]
+        end
+        
+        subgraph "MySQL Protocol"
+            MySQLHandshake[🤝 Handshake]
+            MySQLAuth[🔐 Authentication]
+            MySQLQuery[❓ Query/Response]
+            MySQLPrepared[📝 Prepared Statements]
+        end
+        
+        subgraph "PostgreSQL Protocol"
+            PGStartup[🚀 Startup Message]
+            PGAuth[🔑 Auth Flow]
+            PGSimple[📋 Simple Query]
+            PGExtended[🔧 Extended Query]
+        end
+        
+        subgraph "SQL Server TDS"
+            TDSLogin[🔑 TDS Login]
+            TDSBatch[⚡ SQL Batch]
+            TDSBulk[📦 Bulk Copy]
+            TDSResponse[📨 TDS Response]
+        end
+    end
+    
+    subgraph "Connection Management"
+        PoolConfig[⚙️ Pool Configuration]
+        ConnValidation[✅ Connection Validation]
+        LoadBalancing[⚖️ Load Balancing]
+        Failover[🔄 Failover]
+    end
+    
+    subgraph "Performance Features"
+        BinaryProtocol[⚡ Binary Encoding]
+        PreparedStmts[📝 Prepared Statements]
+        ConnReuse[🔄 Connection Reuse]
+        Pipelining[🚀 Query Pipelining]
+    end
+    
+    subgraph "Security Features"
+        Authentication[🔐 Authentication]
+        Encryption[🔒 TLS/SSL]
+        Authorization[🛡️ Authorization]
+        AuditLogging[📊 Audit Logging]
+    end
+    
+    %% Flow connections
+    Client --> Driver
+    Driver --> ConnPool
+    ConnPool --> Proxy
+    Proxy --> Primary
+    Proxy --> Replica
+    
+    %% Protocol stack
+    App --> Wire
+    Wire --> TCP
+    TCP --> TLS
+    
+    %% MySQL protocol flow
+    MySQLHandshake --> MySQLAuth
+    MySQLAuth --> MySQLQuery
+    MySQLQuery --> MySQLPrepared
+    
+    %% PostgreSQL protocol flow
+    PGStartup --> PGAuth
+    PGAuth --> PGSimple
+    PGSimple --> PGExtended
+    
+    %% TDS protocol flow
+    TDSLogin --> TDSBatch
+    TDSBatch --> TDSBulk
+    TDSBulk --> TDSResponse
+    
+    %% Connection management
+    ConnPool --> PoolConfig
+    ConnPool --> ConnValidation
+    Proxy --> LoadBalancing
+    LoadBalancing --> Failover
+    
+    %% Performance features
+    Wire --> BinaryProtocol
+    Wire --> PreparedStmts
+    ConnPool --> ConnReuse
+    Wire --> Pipelining
+    
+    %% Security features
+    Wire --> Authentication
+    TLS --> Encryption
+    Wire --> Authorization
+    Wire --> AuditLogging
+    
+    %% Protocol connections
+    MySQLHandshake --> Wire
+    PGStartup --> Wire
+    TDSLogin --> Wire
+    
+    %% Styling
+    classDef clientClass fill:#e1f5fe
+    classDef protocolClass fill:#f3e5f5
+    classDef databaseClass fill:#e8f5e8
+    classDef performanceClass fill:#fff3e0
+    classDef securityClass fill:#ffebee
+    
+    class Client,Driver,ConnPool clientClass
+    class Wire,TCP,TLS,MySQLHandshake,MySQLAuth,MySQLQuery,MySQLPrepared protocolClass
+    class Primary,Replica,PGStartup,PGAuth,PGSimple,PGExtended databaseClass
+    class BinaryProtocol,PreparedStmts,ConnReuse,Pipelining performanceClass
+    class Authentication,Encryption,Authorization,AuditLogging securityClass
