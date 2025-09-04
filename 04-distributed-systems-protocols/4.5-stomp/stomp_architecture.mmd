@@ -1,0 +1,61 @@
+graph TB
+    subgraph "STOMP Broker Architecture"
+        BROKER[STOMP Broker<br/>Frame Router & Session Manager]
+        PARSER[Frame Parser<br/>Text-based Protocol]
+        DEST[Destination Manager<br/>/queue/* /topic/*]
+        TRANS[Transaction Manager<br/>BEGIN/COMMIT/ABORT]
+        SESS[Session Manager<br/>Client Connections]
+        
+        BROKER --> PARSER
+        BROKER --> DEST
+        BROKER --> TRANS
+        BROKER --> SESS
+    end
+    
+    subgraph "STOMP Clients"
+        WEB[Web Client<br/>JavaScript/WebSocket]
+        JAVA[Java Client<br/>Spring STOMP]
+        PYTHON[Python Client<br/>stomp.py]
+        RUBY[Ruby Client<br/>stomp gem]
+    end
+    
+    subgraph "Frame Types"
+        CONNECT[CONNECT<br/>Client Authentication]
+        SEND[SEND<br/>Message Publishing]
+        SUBSCRIBE[SUBSCRIBE<br/>Topic Subscription]
+        MESSAGE[MESSAGE<br/>Message Delivery]
+        ACK[ACK/NACK<br/>Message Acknowledgment]
+        TRANSACTION[BEGIN/COMMIT/ABORT<br/>Transaction Control]
+        
+        CONNECT --> SEND
+        SEND --> SUBSCRIBE
+        SUBSCRIBE --> MESSAGE
+        MESSAGE --> ACK
+        ACK --> TRANSACTION
+    end
+    
+    subgraph "Destinations"
+        QUEUE["/queue/orders<br/>Point-to-Point"]
+        TOPIC["/topic/chat<br/>Publish-Subscribe"]
+        TEMP["/temp-queue/reply<br/>Temporary Queues"]
+        
+        DEST --> QUEUE
+        DEST --> TOPIC
+        DEST --> TEMP
+    end
+    
+    WEB -.->|WebSocket Frames| BROKER
+    JAVA -.->|TCP Frames| BROKER
+    PYTHON -.->|TCP Frames| BROKER
+    RUBY -.->|TCP Frames| BROKER
+    
+    BROKER -.->|MESSAGE Frames| WEB
+    BROKER -.->|MESSAGE Frames| JAVA
+    BROKER -.->|MESSAGE Frames| PYTHON
+    BROKER -.->|MESSAGE Frames| RUBY
+    
+    style BROKER fill:#e1f5fe,stroke:#01579b
+    style PARSER fill:#e8f5e8,stroke:#2e7d32
+    style DEST fill:#fff3e0,stroke:#ef6c00
+    style TRANS fill:#f3e5f5,stroke:#7b1fa2
+    style CONNECT fill:#ffebee,stroke:#c62828

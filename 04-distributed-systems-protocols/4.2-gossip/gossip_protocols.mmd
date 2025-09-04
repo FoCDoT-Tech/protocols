@@ -1,0 +1,53 @@
+graph TB
+    subgraph "Gossip Network"
+        N1[Node 1<br/>State: {A:v1, B:v2}]
+        N2[Node 2<br/>State: {A:v1, C:v3}]
+        N3[Node 3<br/>State: {B:v2, D:v4}]
+        N4[Node 4<br/>State: {C:v3, D:v4}]
+        N5[Node 5<br/>State: {A:v1, E:v5}]
+    end
+    
+    subgraph "Gossip Round"
+        GR1[Select Random Peers]
+        GR2[Exchange State Info]
+        GR3[Merge & Update State]
+        GR4[Propagate Changes]
+        GR1 --> GR2
+        GR2 --> GR3
+        GR3 --> GR4
+    end
+    
+    subgraph "Failure Detection"
+        FD1[Ping Random Nodes]
+        FD2[Await Ack Response]
+        FD3[Mark Suspicious]
+        FD4[Gossip Suspicion]
+        FD1 --> FD2
+        FD2 --> FD3
+        FD3 --> FD4
+    end
+    
+    subgraph "Information Spread"
+        IS1[New Information]
+        IS2[Exponential Propagation]
+        IS3[Network Convergence]
+        IS4[Eventual Consistency]
+        IS1 --> IS2
+        IS2 --> IS3
+        IS3 --> IS4
+    end
+    
+    N1 -.-> N2
+    N1 -.-> N5
+    N2 -.-> N3
+    N3 -.-> N4
+    N4 -.-> N5
+    
+    GR4 --> IS1
+    FD4 --> IS1
+    
+    style N1 fill:#e1f5fe,stroke:#01579b
+    style N2 fill:#e8f5e8,stroke:#2e7d32
+    style N3 fill:#fff3e0,stroke:#ef6c00
+    style N4 fill:#f3e5f5,stroke:#7b1fa2
+    style N5 fill:#e0f2f1,stroke:#00695c

@@ -1,0 +1,67 @@
+graph TB
+    subgraph "MQTT Broker Architecture"
+        BROKER[MQTT Broker<br/>Message Router & Session Manager]
+        
+        subgraph "Topic Management"
+            TOPICS[Topic Tree<br/>Hierarchical Structure]
+            WILD[Wildcard Support<br/>+ (single level)<br/># (multi-level)]
+            RETAIN[Retained Messages<br/>Last Known State]
+        end
+        
+        subgraph "Session Management"
+            CLEAN[Clean Sessions<br/>Temporary State]
+            PERSIST[Persistent Sessions<br/>Survive Disconnects]
+            WILL[Last Will & Testament<br/>Unexpected Disconnect]
+        end
+        
+        subgraph "Quality of Service"
+            QOS0[QoS 0: At Most Once<br/>Fire and Forget]
+            QOS1[QoS 1: At Least Once<br/>Acknowledged Delivery]
+            QOS2[QoS 2: Exactly Once<br/>Assured Delivery]
+        end
+        
+        BROKER --> TOPICS
+        BROKER --> CLEAN
+        BROKER --> QOS0
+        TOPICS --> WILD
+        TOPICS --> RETAIN
+        CLEAN --> PERSIST
+        PERSIST --> WILL
+        QOS0 --> QOS1
+        QOS1 --> QOS2
+    end
+    
+    subgraph "IoT Devices"
+        TEMP[Temperature Sensor<br/>Pub: home/living/temp]
+        HUMID[Humidity Sensor<br/>Pub: home/kitchen/humid]
+        MOTION[Motion Detector<br/>Pub: home/entry/motion]
+        LIGHT[Smart Light<br/>Sub: controls/living/light]
+        THERMO[Smart Thermostat<br/>Sub: controls/+/thermostat]
+    end
+    
+    subgraph "Applications"
+        MOBILE[Mobile App<br/>Sub: home/+/+]
+        AUTO[Home Automation<br/>Sub: home/+/motion<br/>Pub: controls/+/+]
+        CLOUD[Cloud Analytics<br/>Sub: home/#]
+        ALERT[Alert System<br/>Sub: alerts/+]
+    end
+    
+    TEMP --> BROKER
+    HUMID --> BROKER
+    MOTION --> BROKER
+    
+    BROKER --> LIGHT
+    BROKER --> THERMO
+    BROKER --> MOBILE
+    BROKER --> AUTO
+    BROKER --> CLOUD
+    BROKER --> ALERT
+    
+    AUTO --> BROKER
+    
+    style BROKER fill:#e1f5fe,stroke:#01579b
+    style TOPICS fill:#e8f5e8,stroke:#2e7d32
+    style CLEAN fill:#fff3e0,stroke:#ef6c00
+    style QOS0 fill:#f3e5f5,stroke:#7b1fa2
+    style TEMP fill:#ffcdd2,stroke:#c62828
+    style MOBILE fill:#e0f2f1,stroke:#00695c

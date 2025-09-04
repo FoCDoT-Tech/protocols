@@ -1,0 +1,91 @@
+graph TB
+    subgraph "AMQP Broker Architecture"
+        subgraph "Connection Layer"
+            CONN[TCP Connection<br/>Heartbeat & Flow Control]
+            CH1[Channel 1<br/>Multiplexed]
+            CH2[Channel 2<br/>Multiplexed]
+            CH3[Channel N<br/>Multiplexed]
+            CONN --> CH1
+            CONN --> CH2
+            CONN --> CH3
+        end
+        
+        subgraph "Exchange Types"
+            EX_DIRECT[Direct Exchange<br/>Exact Key Match]
+            EX_TOPIC[Topic Exchange<br/>Pattern Matching]
+            EX_FANOUT[Fanout Exchange<br/>Broadcast All]
+            EX_HEADERS[Headers Exchange<br/>Header Matching]
+        end
+        
+        subgraph "Message Routing"
+            ROUTE[Routing Engine<br/>Binding Rules]
+            BIND1[Binding: orders.* → order_queue]
+            BIND2[Binding: user.created → user_queue]
+            BIND3[Binding: * → broadcast_queue]
+            
+            ROUTE --> BIND1
+            ROUTE --> BIND2
+            ROUTE --> BIND3
+        end
+        
+        subgraph "Queue Management"
+            Q1[Order Queue<br/>Durable, FIFO]
+            Q2[User Queue<br/>Auto-delete]
+            Q3[Priority Queue<br/>x-max-priority: 10]
+            Q4[Dead Letter Queue<br/>Failed Messages]
+            
+            Q1 --> Q4
+            Q2 --> Q4
+            Q3 --> Q4
+        end
+        
+        subgraph "Delivery Guarantees"
+            ACK[Message Acknowledgment]
+            CONFIRM[Publisher Confirms]
+            PERSIST[Message Persistence]
+            TRANS[Transactions]
+        end
+    end
+    
+    subgraph "Producers"
+        P1[Order Service<br/>Publisher]
+        P2[User Service<br/>Publisher]
+        P3[Notification Service<br/>Publisher]
+    end
+    
+    subgraph "Consumers"
+        C1[Fulfillment Service<br/>Consumer]
+        C2[Analytics Service<br/>Consumer]
+        C3[Email Service<br/>Consumer]
+        C4[SMS Service<br/>Consumer]
+    end
+    
+    P1 --> CH1
+    P2 --> CH2
+    P3 --> CH3
+    
+    CH1 --> EX_DIRECT
+    CH2 --> EX_TOPIC
+    CH3 --> EX_FANOUT
+    
+    EX_DIRECT --> ROUTE
+    EX_TOPIC --> ROUTE
+    EX_FANOUT --> ROUTE
+    EX_HEADERS --> ROUTE
+    
+    ROUTE --> Q1
+    ROUTE --> Q2
+    ROUTE --> Q3
+    
+    Q1 --> C1
+    Q2 --> C2
+    Q3 --> C3
+    Q3 --> C4
+    
+    style EX_DIRECT fill:#e1f5fe,stroke:#01579b
+    style EX_TOPIC fill:#e8f5e8,stroke:#2e7d32
+    style EX_FANOUT fill:#fff3e0,stroke:#ef6c00
+    style EX_HEADERS fill:#f3e5f5,stroke:#7b1fa2
+    style Q1 fill:#ffebee,stroke:#c62828
+    style Q2 fill:#e0f2f1,stroke:#00695c
+    style Q3 fill:#fce4ec,stroke:#ad1457

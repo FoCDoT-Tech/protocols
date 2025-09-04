@@ -1,0 +1,85 @@
+graph TB
+    subgraph "Kafka Cluster"
+        BROKER1[Kafka Broker 1<br/>Leader: orders-0, metrics-1]
+        BROKER2[Kafka Broker 2<br/>Leader: orders-1, metrics-0]
+        BROKER3[Kafka Broker 3<br/>Leader: orders-2]
+        
+        ZK[ZooKeeper Ensemble<br/>Cluster Coordination<br/>Leader Election]
+        
+        BROKER1 --> ZK
+        BROKER2 --> ZK
+        BROKER3 --> ZK
+    end
+    
+    subgraph "Topic Partitions"
+        TOPIC1[orders Topic]
+        PART1_0[Partition 0<br/>Leader: Broker 1<br/>Replicas: [1,2,3]]
+        PART1_1[Partition 1<br/>Leader: Broker 2<br/>Replicas: [2,3,1]]
+        PART1_2[Partition 2<br/>Leader: Broker 3<br/>Replicas: [3,1,2]]
+        
+        TOPIC2[metrics Topic]
+        PART2_0[Partition 0<br/>Leader: Broker 2<br/>Replicas: [2,1]]
+        PART2_1[Partition 1<br/>Leader: Broker 1<br/>Replicas: [1,2]]
+        
+        TOPIC1 --> PART1_0
+        TOPIC1 --> PART1_1
+        TOPIC1 --> PART1_2
+        
+        TOPIC2 --> PART2_0
+        TOPIC2 --> PART2_1
+    end
+    
+    subgraph "Producers"
+        PROD1[Order Service<br/>Producer]
+        PROD2[Payment Service<br/>Producer]
+        PROD3[Metrics Collector<br/>Producer]
+        
+        PROD1 -.->|Hash Partitioning| BROKER1
+        PROD1 -.->|Hash Partitioning| BROKER2
+        PROD1 -.->|Hash Partitioning| BROKER3
+        
+        PROD2 -.->|Round Robin| BROKER2
+        PROD3 -.->|Key-based| BROKER1
+    end
+    
+    subgraph "Consumer Groups"
+        GROUP1[order-processing<br/>Consumer Group]
+        CONS1_1[Consumer 1]
+        CONS1_2[Consumer 2]
+        CONS1_3[Consumer 3]
+        
+        GROUP2[analytics<br/>Consumer Group]
+        CONS2_1[Consumer A]
+        CONS2_2[Consumer B]
+        
+        GROUP3[audit<br/>Consumer Group]
+        CONS3_1[Consumer X]
+        
+        GROUP1 --> CONS1_1
+        GROUP1 --> CONS1_2
+        GROUP1 --> CONS1_3
+        
+        GROUP2 --> CONS2_1
+        GROUP2 --> CONS2_2
+        
+        GROUP3 --> CONS3_1
+    end
+    
+    BROKER1 -.->|orders-0| CONS1_1
+    BROKER2 -.->|orders-1| CONS1_2
+    BROKER3 -.->|orders-2| CONS1_3
+    
+    BROKER1 -.->|metrics-1| CONS2_1
+    BROKER2 -.->|metrics-0| CONS2_2
+    
+    BROKER1 -.->|orders-0,1,2| CONS3_1
+    
+    style BROKER1 fill:#e1f5fe,stroke:#01579b
+    style BROKER2 fill:#e1f5fe,stroke:#01579b
+    style BROKER3 fill:#e1f5fe,stroke:#01579b
+    style ZK fill:#fff3e0,stroke:#ef6c00
+    style TOPIC1 fill:#e8f5e8,stroke:#2e7d32
+    style TOPIC2 fill:#e8f5e8,stroke:#2e7d32
+    style GROUP1 fill:#f3e5f5,stroke:#7b1fa2
+    style GROUP2 fill:#f3e5f5,stroke:#7b1fa2
+    style GROUP3 fill:#f3e5f5,stroke:#7b1fa2

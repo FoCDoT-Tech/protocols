@@ -1,0 +1,49 @@
+graph TB
+    subgraph "Raft Algorithm"
+        R1[Leader Election]
+        R2[Log Replication]
+        R3[Safety Properties]
+        R1 --> R2
+        R2 --> R3
+    end
+    
+    subgraph "Paxos Algorithm"
+        P1[Prepare Phase]
+        P2[Promise Phase]
+        P3[Accept Phase]
+        P4[Accepted Phase]
+        P1 --> P2
+        P2 --> P3
+        P3 --> P4
+    end
+    
+    subgraph "Consensus Properties"
+        CP1[Safety: Never wrong results]
+        CP2[Liveness: Eventually progress]
+        CP3[Fault Tolerance: < n/2 failures]
+    end
+    
+    R3 --> CP1
+    P4 --> CP1
+    CP1 --> CP2
+    CP2 --> CP3
+    
+    subgraph "Real-World Usage"
+        U1[etcd - Kubernetes]
+        U2[Consul - Service Discovery]
+        U3[CockroachDB - Distributed SQL]
+        U4[Kafka - Partition Leadership]
+    end
+    
+    CP3 --> U1
+    CP3 --> U2
+    CP3 --> U3
+    CP3 --> U4
+    
+    style R1 fill:#e1f5fe,stroke:#01579b
+    style R2 fill:#e8f5e8,stroke:#2e7d32
+    style R3 fill:#fff3e0,stroke:#ef6c00
+    style P1 fill:#f3e5f5,stroke:#7b1fa2
+    style P2 fill:#e0f2f1,stroke:#00695c
+    style P3 fill:#ffebee,stroke:#d32f2f
+    style P4 fill:#f1f8e9,stroke:#689f38
