@@ -1,0 +1,79 @@
+graph TD
+    A[Client] -->|UDP Packet| B[Server]
+    B -->|UDP Packet| A
+    
+    subgraph "QUIC Transport Layer"
+        C[Connection Management]
+        D[Stream Multiplexing]
+        E[Flow Control]
+        F[Congestion Control]
+        G[Loss Recovery]
+        H[Connection Migration]
+    end
+    
+    subgraph "HTTP/3 Application Layer"
+        I[HTTP/3 Frames]
+        J[QPACK Compression]
+        K[Server Push]
+        L[Request/Response]
+    end
+    
+    subgraph "QUIC Handshake"
+        M[Initial Packet] --> N[Handshake Packet]
+        N --> O[1-RTT Packet]
+        P[0-RTT Packet] --> O
+        O --> Q[Application Data]
+    end
+    
+    subgraph "Connection Migration"
+        R[Path Validation]
+        S[PATH_CHALLENGE]
+        T[PATH_RESPONSE]
+        U[Connection ID]
+        
+        R --> S
+        S --> T
+        T --> U
+    end
+    
+    subgraph "Stream Independence"
+        V[Stream 0: Control]
+        W[Stream 4: Request 1]
+        X[Stream 8: Request 2]
+        Y[Stream 12: Request 3]
+        Z[No Head-of-Line Blocking]
+        
+        V --> Z
+        W --> Z
+        X --> Z
+        Y --> Z
+    end
+    
+    subgraph "Performance Benefits"
+        AA[Faster Handshake]
+        BB[0-RTT Resumption]
+        CC[Better Loss Recovery]
+        DD[Network Resilience]
+        EE[Mobile Optimization]
+    end
+    
+    subgraph "HTTP/3 vs HTTP/2"
+        FF[HTTP/2: TCP + TLS]
+        GG[HTTP/3: QUIC + HTTP]
+        HH[3 RTT vs 1 RTT]
+        II[HOL Blocking vs Independent Streams]
+        JJ[Connection Breaks vs Migration]
+        
+        FF --> HH
+        GG --> HH
+        FF --> II
+        GG --> II
+        FF --> JJ
+        GG --> JJ
+    end
+    
+    A -.->|Uses| C
+    A -.->|Benefits from| D
+    A -.->|Secured by| M
+    A -.->|Migrates via| R
+    A -.->|Streams via| V

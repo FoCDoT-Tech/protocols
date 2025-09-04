@@ -1,0 +1,46 @@
+graph TB
+    subgraph "TLS Handshake Process"
+        A[Client Hello] --> B[Server Hello]
+        B --> C[Certificate Exchange]
+        C --> D[Key Exchange]
+        D --> E[Certificate Verify]
+        E --> F[Finished Messages]
+        F --> G[Secure Communication]
+    end
+    
+    subgraph "TLS 1.3 vs TLS 1.2 Handshake"
+        H[TLS 1.2: 2-RTT] --> I[Client Hello → Server Hello → Certificate → Key Exchange → Finished]
+        J[TLS 1.3: 1-RTT] --> K[Client Hello + Key Share → Server Hello + Certificate + Finished]
+        L[TLS 1.3: 0-RTT] --> M[Resumed Session with Early Data]
+    end
+    
+    subgraph "Certificate Chain Validation"
+        N[Root CA Certificate] --> O[Intermediate CA Certificate]
+        O --> P[Server Certificate]
+        P --> Q[Certificate Validation]
+        Q --> R[Hostname Verification]
+        R --> S[Expiration Check]
+        S --> T[Revocation Status]
+    end
+    
+    subgraph "Cipher Suite Components"
+        U[Key Exchange] --> V[ECDHE, RSA, DHE]
+        W[Authentication] --> X[RSA, ECDSA, PSK]
+        Y[Encryption] --> Z[AES-GCM, ChaCha20-Poly1305]
+        AA[Hash Function] --> BB[SHA-256, SHA-384]
+    end
+    
+    subgraph "TLS Security Features"
+        CC[Perfect Forward Secrecy] --> DD[Ephemeral Key Exchange]
+        EE[Certificate Pinning] --> FF[Public Key Pinning]
+        GG[HSTS] --> HH[Force HTTPS]
+        II[OCSP Stapling] --> JJ[Certificate Status]
+    end
+    
+    subgraph "Mutual TLS (mTLS)"
+        KK[Client Certificate] --> LL[Client Authentication]
+        MM[Server Certificate] --> NN[Server Authentication]
+        LL --> OO[Mutual Authentication]
+        NN --> OO
+        OO --> PP[Zero Trust Security]
+    end

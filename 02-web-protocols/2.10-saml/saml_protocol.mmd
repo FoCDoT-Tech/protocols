@@ -1,0 +1,107 @@
+graph TB
+    subgraph "SAML 2.0 Federation Architecture"
+        User[👤 User]
+        Browser[🌐 Browser]
+        
+        subgraph "Identity Provider (IdP)"
+            IdP[🏢 Identity Provider]
+            AuthEngine[🔐 Authentication Engine]
+            AttrStore[📋 Attribute Store]
+            SSOService[🔗 SSO Service]
+        end
+        
+        subgraph "Service Provider (SP)"
+            SP[📱 Service Provider]
+            ACS[📨 Assertion Consumer Service]
+            SPApp[🖥️ Application]
+        end
+        
+        subgraph "SAML Protocol Flow"
+            AuthnReq[📤 AuthnRequest]
+            SAMLResp[📨 SAML Response]
+            Assertion[📋 SAML Assertion]
+        end
+    end
+    
+    subgraph "SAML Components"
+        subgraph "Authentication Flows"
+            SPInitiated[🚀 SP-Initiated SSO]
+            IdPInitiated[🏢 IdP-Initiated SSO]
+            SLO[🚪 Single Logout]
+        end
+        
+        subgraph "Security Features"
+            DigitalSig[✍️ Digital Signatures]
+            Encryption[🔒 XML Encryption]
+            TimeBounds[⏰ Time Bounds]
+            AudienceRestr[🎯 Audience Restriction]
+        end
+        
+        subgraph "Assertion Types"
+            AuthnAssertion[🔐 Authentication Assertion]
+            AttrAssertion[📋 Attribute Assertion]
+            AuthzAssertion[🛡️ Authorization Assertion]
+        end
+    end
+    
+    subgraph "Federation Scenarios"
+        Enterprise[🏢 Enterprise SSO]
+        Partner[🤝 Partner Federation]
+        MultiDomain[🌐 Multi-Domain SSO]
+        B2B[🔗 B2B Integration]
+    end
+    
+    subgraph "Trust & Metadata"
+        Metadata[📋 SAML Metadata]
+        TrustRel[🤝 Trust Relationships]
+        CertMgmt[📜 Certificate Management]
+        AttrMapping[🔄 Attribute Mapping]
+    end
+    
+    %% Flow connections
+    User --> Browser
+    Browser --> SP
+    SP --> AuthnReq
+    AuthnReq --> IdP
+    IdP --> AuthEngine
+    AuthEngine --> AttrStore
+    AttrStore --> SSOService
+    SSOService --> SAMLResp
+    SAMLResp --> Assertion
+    Assertion --> ACS
+    ACS --> SPApp
+    SPApp --> User
+    
+    %% Component relationships
+    SPInitiated --> AuthnReq
+    IdPInitiated --> SAMLResp
+    SLO --> IdP
+    
+    DigitalSig --> Assertion
+    Encryption --> Assertion
+    TimeBounds --> Assertion
+    AudienceRestr --> Assertion
+    
+    AuthnAssertion --> Assertion
+    AttrAssertion --> Assertion
+    AuthzAssertion --> Assertion
+    
+    Enterprise --> IdP
+    Partner --> TrustRel
+    MultiDomain --> AttrMapping
+    B2B --> Metadata
+    
+    %% Styling
+    classDef userClass fill:#e1f5fe
+    classDef idpClass fill:#f3e5f5
+    classDef spClass fill:#e8f5e8
+    classDef protocolClass fill:#fff3e0
+    classDef securityClass fill:#ffebee
+    classDef federationClass fill:#f1f8e9
+    
+    class User,Browser userClass
+    class IdP,AuthEngine,AttrStore,SSOService idpClass
+    class SP,ACS,SPApp spClass
+    class AuthnReq,SAMLResp,Assertion protocolClass
+    class DigitalSig,Encryption,TimeBounds,AudienceRestr securityClass
+    class Enterprise,Partner,MultiDomain,B2B federationClass

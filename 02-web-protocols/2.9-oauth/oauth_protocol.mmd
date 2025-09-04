@@ -1,0 +1,83 @@
+graph TD
+    A[OAuth Client] -->|1. Authorization Request| B[Authorization Server]
+    B -->|2. User Authorization| C[Resource Owner]
+    C -->|3. Authorization Grant| B
+    B -->|4. Access Token| A
+    A -->|5. API Request + Token| D[Resource Server]
+    D -->|6. Protected Resource| A
+    
+    subgraph "OAuth 2.0 Flows"
+        E[Authorization Code Flow]
+        F[PKCE Flow]
+        G[Client Credentials Flow]
+        H[Refresh Token Flow]
+        
+        E --> F
+        F --> G
+        G --> H
+    end
+    
+    subgraph "Security Features"
+        I[State Parameter]
+        J[PKCE Protection]
+        K[HTTPS Only]
+        L[Short-lived Tokens]
+        M[Scope Limitation]
+        
+        I --> J
+        J --> K
+        K --> L
+        L --> M
+    end
+    
+    subgraph "Token Types"
+        N[Access Token]
+        O[Refresh Token]
+        P[Authorization Code]
+        Q[Bearer Token]
+        
+        N --> O
+        O --> P
+        P --> Q
+    end
+    
+    subgraph "Grant Types"
+        R[Authorization Code]
+        S[Client Credentials]
+        T[Refresh Token]
+        U[Device Authorization]
+        
+        R --> S
+        S --> T
+        T --> U
+    end
+    
+    subgraph "Use Cases"
+        V[Social Login]
+        W[API Access Delegation]
+        X[Microservices Auth]
+        Y[Mobile App Security]
+        Z[Enterprise SSO]
+        
+        V --> W
+        W --> X
+        X --> Y
+        Y --> Z
+    end
+    
+    subgraph "Security Threats"
+        AA[Code Interception]
+        BB[CSRF Attacks]
+        CC[Token Leakage]
+        DD[Scope Escalation]
+        
+        AA --> BB
+        BB --> CC
+        CC --> DD
+    end
+    
+    A -.->|Implements| E
+    A -.->|Protected by| I
+    A -.->|Uses| N
+    A -.->|Prevents| AA
+    A -.->|Enables| V

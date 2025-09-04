@@ -1,0 +1,68 @@
+graph TD
+    A[Client] -->|1. TCP + TLS Handshake| B[Server]
+    B -->|2. HTTP/2 Connection Preface| A
+    
+    subgraph "HTTP/2 Features"
+        C[Binary Framing]
+        D[Stream Multiplexing]
+        E[Server Push]
+        F[Header Compression]
+        G[Flow Control]
+    end
+    
+    subgraph "Frame Types"
+        H[HEADERS Frame]
+        I[DATA Frame]
+        J[SETTINGS Frame]
+        K[PUSH_PROMISE Frame]
+        L[WINDOW_UPDATE Frame]
+        M[GOAWAY Frame]
+    end
+    
+    subgraph "Stream States"
+        N[idle] --> O[open]
+        O --> P[half-closed local]
+        O --> Q[half-closed remote]
+        P --> R[closed]
+        Q --> R[closed]
+        N --> S[reserved local]
+        N --> T[reserved remote]
+        S --> Q
+        T --> P
+    end
+    
+    subgraph "Multiplexing Example"
+        U[Stream 1: /index.html] 
+        V[Stream 3: /style.css]
+        W[Stream 5: /app.js]
+        X[Stream 7: /image.png]
+        Y[Single TCP Connection]
+        
+        U --> Y
+        V --> Y
+        W --> Y
+        X --> Y
+    end
+    
+    subgraph "HPACK Compression"
+        Z[Static Table]
+        AA[Dynamic Table]
+        BB[Huffman Encoding]
+        
+        Z --> CC[Compressed Headers]
+        AA --> CC
+        BB --> CC
+    end
+    
+    subgraph "Server Push Flow"
+        DD[Client Request] --> EE[Server Analysis]
+        EE --> FF[PUSH_PROMISE Frame]
+        FF --> GG[Pushed Resource]
+        GG --> HH[Client Cache]
+    end
+    
+    A -.->|Uses| C
+    A -.->|Benefits from| D
+    A -.->|Receives| E
+    A -.->|Compressed| F
+    A -.->|Managed by| G

@@ -1,0 +1,95 @@
+graph TD
+    A[GraphQL Client] -->|HTTP POST/GET| B[GraphQL Server]
+    
+    subgraph "GraphQL Architecture"
+        C[Schema Definition]
+        D[Type System]
+        E[Resolvers]
+        F[Query Execution Engine]
+        
+        C --> D
+        D --> E
+        E --> F
+    end
+    
+    subgraph "Operation Types"
+        G[Query - Read Data]
+        H[Mutation - Write Data]
+        I[Subscription - Real-time]
+        
+        G --> H
+        H --> I
+    end
+    
+    subgraph "Type System"
+        J[Scalar Types]
+        K[Object Types]
+        L[Interface Types]
+        M[Union Types]
+        N[Enum Types]
+        O[Input Types]
+        
+        J --> K
+        K --> L
+        L --> M
+        M --> N
+        N --> O
+    end
+    
+    subgraph "Query Features"
+        P[Field Selection]
+        Q[Arguments]
+        R[Aliases]
+        S[Fragments]
+        T[Variables]
+        U[Directives]
+        
+        P --> Q
+        Q --> R
+        R --> S
+        S --> T
+        T --> U
+    end
+    
+    subgraph "Real-time Features"
+        V[WebSocket Transport]
+        W[Server-Sent Events]
+        X[Event-driven Updates]
+        Y[Live Data Sync]
+        
+        V --> W
+        W --> X
+        X --> Y
+    end
+    
+    subgraph "Performance Benefits"
+        Z[Single Endpoint]
+        AA[Precise Data Fetching]
+        BB[Reduced Over-fetching]
+        CC[Batch Requests]
+        DD[Query Optimization]
+        
+        Z --> AA
+        AA --> BB
+        BB --> CC
+        CC --> DD
+    end
+    
+    subgraph "Use Cases"
+        EE[Mobile Applications]
+        FF[Microservices API Gateway]
+        GG[Real-time Dashboards]
+        HH[Content Management]
+        II[E-commerce Platforms]
+        
+        EE --> FF
+        FF --> GG
+        GG --> HH
+        HH --> II
+    end
+    
+    A -.->|Defines| C
+    A -.->|Executes| G
+    A -.->|Benefits from| Z
+    A -.->|Subscribes via| V
+    A -.->|Ideal for| EE

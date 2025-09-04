@@ -1,0 +1,88 @@
+graph TD
+    A[Client] -->|HTTP Upgrade Request| B[Server]
+    B -->|101 Switching Protocols| A
+    
+    subgraph "WebSocket Handshake"
+        C[HTTP GET Request]
+        D[Upgrade: websocket]
+        E[Connection: Upgrade]
+        F[Sec-WebSocket-Key]
+        G[Sec-WebSocket-Version: 13]
+        
+        C --> D
+        D --> E
+        E --> F
+        F --> G
+    end
+    
+    subgraph "Server Response"
+        H[HTTP/1.1 101 Switching Protocols]
+        I[Upgrade: websocket]
+        J[Connection: Upgrade]
+        K[Sec-WebSocket-Accept]
+        
+        H --> I
+        I --> J
+        J --> K
+    end
+    
+    subgraph "WebSocket Frames"
+        L[Text Frame - 0x1]
+        M[Binary Frame - 0x2]
+        N[Close Frame - 0x8]
+        O[Ping Frame - 0x9]
+        P[Pong Frame - 0xA]
+    end
+    
+    subgraph "Frame Structure"
+        Q[FIN + Opcode]
+        R[Mask + Payload Length]
+        S[Extended Payload Length]
+        T[Masking Key]
+        U[Payload Data]
+        
+        Q --> R
+        R --> S
+        S --> T
+        T --> U
+    end
+    
+    subgraph "Communication Patterns"
+        V[Client → Server]
+        W[Server → Client]
+        X[Bidirectional]
+        Y[Real-time]
+        Z[Persistent Connection]
+        
+        V --> X
+        W --> X
+        X --> Y
+        Y --> Z
+    end
+    
+    subgraph "Use Cases"
+        AA[Chat Applications]
+        BB[Live Data Feeds]
+        CC[Online Gaming]
+        DD[Collaborative Editing]
+        EE[IoT Monitoring]
+        
+        AA --> Z
+        BB --> Z
+        CC --> Z
+        DD --> Z
+        EE --> Z
+    end
+    
+    subgraph "Benefits vs HTTP"
+        FF[Lower Latency]
+        GG[Reduced Overhead]
+        HH[Server Push]
+        II[Persistent State]
+        JJ[Binary Support]
+    end
+    
+    A -.->|Establishes| C
+    A -.->|Communicates via| L
+    A -.->|Benefits from| FF
+    A -.->|Uses for| AA

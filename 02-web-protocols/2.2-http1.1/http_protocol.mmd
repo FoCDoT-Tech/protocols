@@ -1,0 +1,49 @@
+graph TB
+    subgraph "HTTP/1.1 Request-Response Cycle"
+        A[Client] -->|1. HTTP Request| B[Server]
+        B -->|2. HTTP Response| A
+    end
+    
+    subgraph "HTTP Request Structure"
+        C[Request Line] --> D[Method + URI + Version]
+        D --> E[GET /api/users HTTP/1.1]
+        F[Request Headers] --> G[Host: example.com]
+        G --> H[Accept: application/json]
+        H --> I[Authorization: Bearer token]
+        J[Message Body] --> K[Optional payload]
+    end
+    
+    subgraph "HTTP Response Structure"
+        L[Status Line] --> M[Version + Code + Phrase]
+        M --> N[HTTP/1.1 200 OK]
+        O[Response Headers] --> P[Content-Type: application/json]
+        P --> Q[Content-Length: 1234]
+        Q --> R[Cache-Control: max-age=3600]
+        S[Message Body] --> T[Response payload]
+    end
+    
+    subgraph "HTTP Methods & Semantics"
+        U[GET] --> V[Retrieve Resource]
+        V --> W[Safe & Idempotent]
+        X[POST] --> Y[Create Resource]
+        Y --> Z[Not Safe, Not Idempotent]
+        AA[PUT] --> BB[Update/Replace]
+        BB --> CC[Not Safe, Idempotent]
+        DD[DELETE] --> EE[Remove Resource]
+        EE --> FF[Not Safe, Idempotent]
+    end
+    
+    subgraph "HTTP Status Code Classes"
+        GG[1xx Informational] --> HH[100 Continue]
+        II[2xx Success] --> JJ[200 OK, 201 Created]
+        KK[3xx Redirection] --> LL[301 Moved, 304 Not Modified]
+        MM[4xx Client Error] --> NN[400 Bad Request, 404 Not Found]
+        OO[5xx Server Error] --> PP[500 Internal Error, 503 Unavailable]
+    end
+    
+    subgraph "HTTP/1.1 Features"
+        QQ[Persistent Connections] --> RR[Connection: keep-alive]
+        SS[Chunked Transfer] --> TT[Transfer-Encoding: chunked]
+        UU[Host Header] --> VV[Virtual hosting support]
+        WW[Cache Control] --> XX[ETag, Last-Modified]
+    end

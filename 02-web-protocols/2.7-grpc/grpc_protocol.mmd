@@ -1,0 +1,88 @@
+graph TD
+    A[gRPC Client] -->|HTTP/2 Connection| B[gRPC Server]
+    
+    subgraph "gRPC Architecture"
+        C[Protocol Buffers Schema]
+        D[Service Definition]
+        E[Code Generation]
+        F[Runtime Libraries]
+        
+        C --> D
+        D --> E
+        E --> F
+    end
+    
+    subgraph "HTTP/2 Transport"
+        G[Multiplexed Streams]
+        H[Header Compression]
+        I[Flow Control]
+        J[Server Push]
+        
+        G --> H
+        H --> I
+        I --> J
+    end
+    
+    subgraph "RPC Types"
+        K[Unary RPC]
+        L[Server Streaming]
+        M[Client Streaming]
+        N[Bidirectional Streaming]
+        
+        K --> L
+        L --> M
+        M --> N
+    end
+    
+    subgraph "Protocol Buffers"
+        O[Binary Serialization]
+        P[Schema Evolution]
+        Q[Cross-Language Support]
+        R[Type Safety]
+        
+        O --> P
+        P --> Q
+        Q --> R
+    end
+    
+    subgraph "Built-in Features"
+        S[Authentication]
+        T[Load Balancing]
+        U[Deadlines/Timeouts]
+        V[Cancellation]
+        W[Error Handling]
+        
+        S --> T
+        T --> U
+        U --> V
+        V --> W
+    end
+    
+    subgraph "Use Cases"
+        X[Microservices Communication]
+        Y[Real-time Data Streaming]
+        Z[Mobile/Web APIs]
+        AA[High-Performance Computing]
+        
+        X --> Y
+        Y --> Z
+        Z --> AA
+    end
+    
+    subgraph "Performance Benefits"
+        BB[50-90% Smaller Payloads]
+        CC[2-10x Faster Serialization]
+        DD[HTTP/2 Multiplexing]
+        EE[Binary Framing]
+        
+        BB --> CC
+        CC --> DD
+        DD --> EE
+    end
+    
+    A -.->|Uses| C
+    A -.->|Leverages| G
+    A -.->|Supports| K
+    A -.->|Benefits from| S
+    A -.->|Ideal for| X
+    A -.->|Achieves| BB
