@@ -1,0 +1,62 @@
+graph TB
+    subgraph "Certificate Authority Hierarchy"
+        RootCA["Root CA<br/>(HSM Protected)"]
+        IntermediateCA["Intermediate CA<br/>(Istio Citadel)"]
+        WorkloadCA["Workload CA<br/>(SPIRE Server)"]
+    end
+    
+    subgraph "Service Mesh Control Plane"
+        Citadel["Citadel<br/>(Certificate Management)"]
+        Pilot["Pilot<br/>(Configuration)"]
+        SPIRE["SPIRE Server<br/>(Identity Provider)"]
+    end
+    
+    subgraph "Data Plane - Service A"
+        EnvoyA["Envoy Proxy"]
+        AppA["Application A"]
+        SPIREAgentA["SPIRE Agent"]
+        CertA["X.509 Certificate<br/>SPIFFE ID: spiffe://domain/serviceA"]
+    end
+    
+    subgraph "Data Plane - Service B"
+        EnvoyB["Envoy Proxy"]
+        AppB["Application B"]
+        SPIREAgentB["SPIRE Agent"]
+        CertB["X.509 Certificate<br/>SPIFFE ID: spiffe://domain/serviceB"]
+    end
+    
+    subgraph "Data Plane - Service C"
+        EnvoyC["Envoy Proxy"]
+        AppC["Application C"]
+        SPIREAgentC["SPIRE Agent"]
+        CertC["X.509 Certificate<br/>SPIFFE ID: spiffe://domain/serviceC"]
+    end
+    
+    RootCA --> IntermediateCA
+    IntermediateCA --> WorkloadCA
+    WorkloadCA --> Citadel
+    Citadel --> SPIRE
+    
+    SPIRE --> SPIREAgentA
+    SPIRE --> SPIREAgentB
+    SPIRE --> SPIREAgentC
+    
+    SPIREAgentA --> CertA
+    SPIREAgentB --> CertB
+    SPIREAgentC --> CertC
+    
+    CertA --> EnvoyA
+    CertB --> EnvoyB
+    CertC --> EnvoyC
+    
+    EnvoyA <--> AppA
+    EnvoyB <--> AppB
+    EnvoyC <--> AppC
+    
+    EnvoyA -.->|mTLS Handshake| EnvoyB
+    EnvoyB -.->|mTLS Handshake| EnvoyC
+    EnvoyC -.->|mTLS Handshake| EnvoyA
+    
+    Pilot -.->|TLS Config| EnvoyA
+    Pilot -.->|TLS Config| EnvoyB
+    Pilot -.->|TLS Config| EnvoyC

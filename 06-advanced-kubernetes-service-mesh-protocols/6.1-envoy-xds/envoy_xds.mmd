@@ -1,0 +1,72 @@
+graph TB
+    subgraph "Control Plane"
+        Pilot["Pilot (Istio)"]
+        Galley["Galley (Config)"]
+        Citadel["Citadel (Security)"]
+    end
+    
+    subgraph "Kubernetes API"
+        VS["VirtualService"]
+        DR["DestinationRule"]
+        SE["ServiceEntry"]
+    end
+    
+    subgraph "xDS APIs"
+        LDS["LDS<br/>Listener Discovery"]
+        RDS["RDS<br/>Route Discovery"]
+        CDS["CDS<br/>Cluster Discovery"]
+        EDS["EDS<br/>Endpoint Discovery"]
+        SDS["SDS<br/>Secret Discovery"]
+    end
+    
+    subgraph "Data Plane - Pod A"
+        EnvoyA["Envoy Proxy"]
+        AppA["Application"]
+    end
+    
+    subgraph "Data Plane - Pod B"
+        EnvoyB["Envoy Proxy"]
+        AppB["Application"]
+    end
+    
+    subgraph "Data Plane - Pod C"
+        EnvoyC["Envoy Proxy"]
+        AppC["Application"]
+    end
+    
+    VS --> Pilot
+    DR --> Pilot
+    SE --> Pilot
+    Galley --> Pilot
+    Citadel --> SDS
+    
+    Pilot --> LDS
+    Pilot --> RDS
+    Pilot --> CDS
+    Pilot --> EDS
+    
+    LDS -.->|gRPC Stream| EnvoyA
+    RDS -.->|gRPC Stream| EnvoyA
+    CDS -.->|gRPC Stream| EnvoyA
+    EDS -.->|gRPC Stream| EnvoyA
+    SDS -.->|gRPC Stream| EnvoyA
+    
+    LDS -.->|gRPC Stream| EnvoyB
+    RDS -.->|gRPC Stream| EnvoyB
+    CDS -.->|gRPC Stream| EnvoyB
+    EDS -.->|gRPC Stream| EnvoyB
+    SDS -.->|gRPC Stream| EnvoyB
+    
+    LDS -.->|gRPC Stream| EnvoyC
+    RDS -.->|gRPC Stream| EnvoyC
+    CDS -.->|gRPC Stream| EnvoyC
+    EDS -.->|gRPC Stream| EnvoyC
+    SDS -.->|gRPC Stream| EnvoyC
+    
+    EnvoyA <--> AppA
+    EnvoyB <--> AppB
+    EnvoyC <--> AppC
+    
+    AppA -.->|HTTP/gRPC| EnvoyB
+    AppB -.->|HTTP/gRPC| EnvoyC
+    AppC -.->|HTTP/gRPC| EnvoyA

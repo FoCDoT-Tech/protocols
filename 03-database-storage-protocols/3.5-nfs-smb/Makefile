@@ -7,11 +7,11 @@ all: deps nfs smb monitor diagrams test
 
 deps:
 	@echo "🔍 Checking dependencies for NFS & SMB protocols..."
-	@if [ ! -f "../../01-core-internet-networking/1.3-tcp/tcp_simulation.py" ]; then \
+	@if [ ! -f "../../01-core-internet-networking/1.3-tcp/tcp_client_server.py" ]; then \
 		echo "❌ Missing dependency: TCP (1.3) - run 'make' in 01-core-internet-networking/1.3-tcp first"; \
 		exit 1; \
 	fi
-	@if [ ! -f "../../01-core-internet-networking/1.4-udp/udp_simulation.py" ]; then \
+	@if [ ! -f "../../01-core-internet-networking/1.4-udp/udp_client_server.py" ]; then \
 		echo "❌ Missing dependency: UDP (1.4) - run 'make' in 01-core-internet-networking/1.4-udp first"; \
 		exit 1; \
 	fi

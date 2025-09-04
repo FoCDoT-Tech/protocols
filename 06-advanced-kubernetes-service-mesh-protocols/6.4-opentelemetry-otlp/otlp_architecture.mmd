@@ -1,0 +1,113 @@
+graph TB
+    subgraph "Application Layer"
+        APP1[Trading Service<br/>Auto-Instrumentation]
+        APP2[Risk Engine<br/>Manual Instrumentation]
+        APP3[Order Matching<br/>Custom Metrics]
+        APP4[Settlement Service<br/>Structured Logs]
+        SDK1[OTel SDK]
+        SDK2[OTel SDK]
+        SDK3[OTel SDK]
+        SDK4[OTel SDK]
+    end
+    
+    subgraph "OTLP Transport Layer"
+        GRPC[gRPC Transport<br/>Binary Protocol Buffers]
+        HTTP[HTTP Transport<br/>JSON Encoding]
+        COMP[Compression Layer<br/>gzip/zstd]
+        AUTH[Authentication<br/>API Keys/mTLS]
+        BATCH[Batching Layer<br/>Configurable Sizes]
+    end
+    
+    subgraph "OpenTelemetry Collector"
+        RECV[OTLP Receivers<br/>:4317 gRPC, :4318 HTTP]
+        PROC[Processors Pipeline]
+        EXP[Exporters]
+        
+        subgraph "Processor Types"
+            BPROC[Batch Processor<br/>Aggregation]
+            FPROC[Filter Processor<br/>Data Filtering]
+            APROC[Attributes Processor<br/>Enrichment]
+            SPROC[Sampling Processor<br/>Rate Control]
+        end
+    end
+    
+    subgraph "Telemetry Data Types"
+        TRACES[Distributed Traces<br/>Spans & Context]
+        METRICS[Application Metrics<br/>Counters/Gauges/Histograms]
+        LOGS[Structured Logs<br/>Events & Errors]
+        RESOURCE[Resource Attributes<br/>Service/Host/K8s Metadata]
+    end
+    
+    subgraph "Observability Backends"
+        JAEGER[Jaeger<br/>Trace Storage & UI]
+        PROM[Prometheus<br/>Metrics Storage]
+        LOKI[Grafana Loki<br/>Log Aggregation]
+        VENDOR[Vendor SaaS<br/>DataDog/NewRelic/Honeycomb]
+        CUSTOM[Custom Backends<br/>ClickHouse/BigQuery]
+    end
+    
+    subgraph "Service Mesh Integration"
+        ENVOY[Envoy Proxy<br/>Access Logs & Traces]
+        ISTIO[Istio Control Plane<br/>Telemetry v2]
+        KUBE[Kubernetes<br/>Pod/Service Metadata]
+    end
+    
+    %% Application to SDK connections
+    APP1 --> SDK1
+    APP2 --> SDK2
+    APP3 --> SDK3
+    APP4 --> SDK4
+    
+    %% SDK to Transport Layer
+    SDK1 --> GRPC
+    SDK2 --> GRPC
+    SDK3 --> HTTP
+    SDK4 --> HTTP
+    
+    %% Transport Layer Processing
+    GRPC --> COMP
+    HTTP --> COMP
+    COMP --> AUTH
+    AUTH --> BATCH
+    BATCH --> RECV
+    
+    %% Collector Processing Pipeline
+    RECV --> PROC
+    PROC --> BPROC
+    BPROC --> FPROC
+    FPROC --> APROC
+    APROC --> SPROC
+    SPROC --> EXP
+    
+    %% Data Type Associations
+    SDK1 -.-> TRACES
+    SDK2 -.-> METRICS
+    SDK3 -.-> LOGS
+    SDK4 -.-> RESOURCE
+    
+    %% Export to Backends
+    EXP --> JAEGER
+    EXP --> PROM
+    EXP --> LOKI
+    EXP --> VENDOR
+    EXP --> CUSTOM
+    
+    %% Service Mesh Integration
+    ENVOY --> RECV
+    ISTIO --> RECV
+    KUBE --> APROC
+    
+    %% Styling
+    classDef appStyle fill:#E3F2FD,stroke:#1976D2,stroke-width:2px
+    classDef transportStyle fill:#F3E5F5,stroke:#7B1FA2,stroke-width:2px
+    classDef collectorStyle fill:#E8F5E8,stroke:#388E3C,stroke-width:2px
+    classDef dataStyle fill:#FFF3E0,stroke:#F57C00,stroke-width:2px
+    classDef backendStyle fill:#FFEBEE,stroke:#D32F2F,stroke-width:2px
+    classDef meshStyle fill:#F1F8E9,stroke:#689F38,stroke-width:2px
+    
+    class APP1,APP2,APP3,APP4,SDK1,SDK2,SDK3,SDK4 appStyle
+    class GRPC,HTTP,COMP,AUTH,BATCH transportStyle
+    class RECV,PROC,EXP,BPROC,FPROC,APROC,SPROC collectorStyle
+    class TRACES,METRICS,LOGS,RESOURCE dataStyle
+    class JAEGER,PROM,LOKI,VENDOR,CUSTOM backendStyle
+    class ENVOY,ISTIO,KUBE meshStyle

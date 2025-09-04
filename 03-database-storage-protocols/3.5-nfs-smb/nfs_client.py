@@ -272,7 +272,7 @@ class NFSClient:
         
         if response and len(response) >= 36:
             # Decode attributes (simplified)
-            fields = struct.unpack('>IIIIIIQQI', response[:36])
+            fields = struct.unpack('>IIIIIIQQI', response[:44])
             
             attrs = FileAttributes(
                 file_type="regular" if fields[0] == 1 else "directory",

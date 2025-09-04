@@ -1,0 +1,130 @@
+graph TB
+    subgraph "User Space Applications"
+        TRADING[Trading Application<br/>Ultra-Low Latency]
+        CTRL[eBPF Control Plane<br/>Program Management]
+        METRICS[Metrics Collector<br/>Real-time Monitoring]
+        CLI[bpftool/BCC<br/>Debugging Tools]
+    end
+    
+    subgraph "eBPF Programs"
+        XDP_PROG[XDP Load Balancer<br/>Packet Forwarding]
+        TC_PROG[TC Traffic Shaper<br/>QoS & Rate Limiting]
+        SOCK_PROG[Socket Filter<br/>Connection Tracking]
+        KPROBE_PROG[Kprobe Tracer<br/>Function Monitoring]
+        TRACE_PROG[Tracepoint Collector<br/>Event Monitoring]
+    end
+    
+    subgraph "Kernel Hooks & Network Stack"
+        XDP[XDP Hook<br/>Network Driver Level]
+        TC_INGRESS[TC Ingress Hook<br/>Traffic Control]
+        TC_EGRESS[TC Egress Hook<br/>Traffic Control]
+        SOCKET[Socket Filter Hook<br/>Per-Socket Processing]
+        KPROBE[Kprobe Hook<br/>Dynamic Instrumentation]
+        TRACEPOINT[Tracepoint Hook<br/>Static Instrumentation]
+        
+        subgraph "Network Layers"
+            NIC[Network Interface Card]
+            DRIVER[Network Driver]
+            NETDEV[Net Device Layer]
+            IP_LAYER[IP Layer]
+            TCP_LAYER[TCP Layer]
+            SOCK_LAYER[Socket Layer]
+        end
+    end
+    
+    subgraph "eBPF Maps & State"
+        CONN_MAP[Connection Map<br/>Flow Tracking]
+        POLICY_MAP[Policy Map<br/>Rules & Actions]
+        METRICS_MAP[Metrics Map<br/>Per-CPU Counters]
+        RING_BUF[Ring Buffer<br/>Event Streaming]
+        LRU_MAP[LRU Cache<br/>Session State]
+    end
+    
+    subgraph "Service Mesh Integration"
+        CILIUM[Cilium CNI<br/>eBPF Native Dataplane]
+        ISTIO_AMBIENT[Istio Ambient Mesh<br/>Sidecar-less Architecture]
+        LINKERD[Linkerd + eBPF<br/>Accelerated Proxy]
+        ENVOY_ACCEL[Envoy eBPF<br/>Kernel Acceleration]
+    end
+    
+    subgraph "Observability & Security"
+        MONITOR[Network Monitoring<br/>Real-time Visibility]
+        FIREWALL[eBPF Firewall<br/>Packet Filtering]
+        DPI[Deep Packet Inspection<br/>Protocol Analysis]
+        AUDIT[Security Auditing<br/>Compliance Logging]
+    end
+    
+    %% User space to eBPF programs
+    TRADING --> CTRL
+    CTRL --> XDP_PROG
+    CTRL --> TC_PROG
+    CTRL --> SOCK_PROG
+    CTRL --> KPROBE_PROG
+    CTRL --> TRACE_PROG
+    
+    %% eBPF programs to kernel hooks
+    XDP_PROG --> XDP
+    TC_PROG --> TC_INGRESS
+    TC_PROG --> TC_EGRESS
+    SOCK_PROG --> SOCKET
+    KPROBE_PROG --> KPROBE
+    TRACE_PROG --> TRACEPOINT
+    
+    %% Network stack flow
+    NIC --> DRIVER
+    DRIVER --> XDP
+    XDP --> NETDEV
+    NETDEV --> TC_INGRESS
+    TC_INGRESS --> IP_LAYER
+    IP_LAYER --> TCP_LAYER
+    TCP_LAYER --> SOCK_LAYER
+    SOCK_LAYER --> SOCKET
+    SOCK_LAYER --> TC_EGRESS
+    
+    %% eBPF maps interaction
+    XDP_PROG -.-> CONN_MAP
+    TC_PROG -.-> POLICY_MAP
+    SOCK_PROG -.-> METRICS_MAP
+    KPROBE_PROG -.-> RING_BUF
+    TRACE_PROG -.-> LRU_MAP
+    
+    %% Maps to user space
+    CONN_MAP --> METRICS
+    POLICY_MAP --> METRICS
+    METRICS_MAP --> METRICS
+    RING_BUF --> METRICS
+    LRU_MAP --> METRICS
+    
+    %% Service mesh integration
+    CILIUM --> XDP
+    CILIUM --> TC_INGRESS
+    ISTIO_AMBIENT --> SOCKET
+    LINKERD --> KPROBE
+    ENVOY_ACCEL --> XDP_PROG
+    
+    %% Observability integration
+    MONITOR --> METRICS_MAP
+    FIREWALL --> POLICY_MAP
+    DPI --> SOCK_PROG
+    AUDIT --> RING_BUF
+    
+    %% Debugging tools
+    CLI --> XDP_PROG
+    CLI --> TC_PROG
+    CLI --> CONN_MAP
+    CLI --> METRICS_MAP
+    
+    %% Styling
+    classDef userStyle fill:#E3F2FD,stroke:#1976D2,stroke-width:2px
+    classDef programStyle fill:#F3E5F5,stroke:#7B1FA2,stroke-width:2px
+    classDef kernelStyle fill:#E8F5E8,stroke:#388E3C,stroke-width:2px
+    classDef mapStyle fill:#FFF3E0,stroke:#F57C00,stroke-width:2px
+    classDef meshStyle fill:#FFEBEE,stroke:#D32F2F,stroke-width:2px
+    classDef obsStyle fill:#F1F8E9,stroke:#689F38,stroke-width:2px
+    
+    class TRADING,CTRL,METRICS,CLI userStyle
+    class XDP_PROG,TC_PROG,SOCK_PROG,KPROBE_PROG,TRACE_PROG programStyle
+    class XDP,TC_INGRESS,TC_EGRESS,SOCKET,KPROBE,TRACEPOINT,NIC,DRIVER,NETDEV,IP_LAYER,TCP_LAYER,SOCK_LAYER kernelStyle
+    class CONN_MAP,POLICY_MAP,METRICS_MAP,RING_BUF,LRU_MAP mapStyle
+    class CILIUM,ISTIO_AMBIENT,LINKERD,ENVOY_ACCEL meshStyle
+    class MONITOR,FIREWALL,DPI,AUDIT obsStyle

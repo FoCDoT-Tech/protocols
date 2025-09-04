@@ -155,7 +155,7 @@ class SMBClient:
         
         if header.command == SMBCommand.NEGOTIATE.value:
             # Negotiate response
-            response_data = struct.pack('<HHIHH16sIIIQQ',
+            response_data = struct.pack('<HHIHH16sIII',
                 65,  # StructureSize
                 0,   # SecurityMode
                 self.version.value,  # DialectRevision
@@ -164,10 +164,7 @@ class SMBClient:
                 self.client_guid[:16],  # ServerGuid (reuse client for simulation)
                 0x01,  # Capabilities
                 0x100000,  # MaxTransactSize
-                0x100000,  # MaxReadSize
-                0x100000,  # MaxWriteSize
-                int(time.time() * 10000000),  # SystemTime
-                int(time.time() * 10000000)   # ServerStartTime
+                0x100000   # MaxReadSize
             )
             
         elif header.command == SMBCommand.SESSION_SETUP.value:

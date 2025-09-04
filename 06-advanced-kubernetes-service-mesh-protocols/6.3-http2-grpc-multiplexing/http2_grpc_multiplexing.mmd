@@ -1,0 +1,114 @@
+graph TB
+    subgraph "Client Application"
+        CA[Client App]
+        GC[gRPC Client]
+        CM[Connection Manager]
+        SP[Stream Pool]
+    end
+    
+    subgraph "HTTP/2 Connection Layer"
+        H2C[HTTP/2 Connection]
+        S1[Stream 1<br/>GetVideo RPC]
+        S2[Stream 2<br/>ProcessChunk RPC]
+        S3[Stream 3<br/>StreamMetadata RPC]
+        S4[Stream 4<br/>Heartbeat RPC]
+        S5[Stream 5<br/>UploadVideo RPC]
+        FC[Flow Control<br/>WINDOW_UPDATE]
+        HP[HPACK Compression<br/>Header Tables]
+    end
+    
+    subgraph "Protocol Frames"
+        HF[HEADERS Frames]
+        DF[DATA Frames]
+        WF[WINDOW_UPDATE Frames]
+        RF[RST_STREAM Frames]
+        SF[SETTINGS Frames]
+        PF[PING Frames]
+    end
+    
+    subgraph "Service Mesh Proxy"
+        EP[Envoy Proxy]
+        LB[Load Balancer]
+        HC[Health Checker]
+        RT[Request Router]
+        TM[Traffic Manager]
+    end
+    
+    subgraph "Server Application"
+        SA[Server App]
+        GS[gRPC Server]
+        SH[Stream Handler]
+        WP[Worker Pool]
+        BL[Business Logic]
+    end
+    
+    subgraph "Stream Types"
+        UR[Unary RPC<br/>Request-Response]
+        SS[Server Streaming<br/>1 Request → N Responses]
+        CS[Client Streaming<br/>N Requests → 1 Response]
+        BS[Bidirectional Streaming<br/>N Requests ↔ N Responses]
+    end
+    
+    %% Client to HTTP/2 Connection
+    CA --> GC
+    GC --> CM
+    CM --> SP
+    SP --> H2C
+    
+    %% HTTP/2 Streams
+    H2C --> S1
+    H2C --> S2
+    H2C --> S3
+    H2C --> S4
+    H2C --> S5
+    
+    %% Flow Control and Compression
+    S1 --> FC
+    S2 --> FC
+    S3 --> FC
+    S4 --> HP
+    S5 --> HP
+    
+    %% Protocol Frames
+    S1 --> HF
+    S2 --> DF
+    S3 --> WF
+    S4 --> RF
+    S5 --> SF
+    FC --> PF
+    
+    %% Service Mesh
+    H2C --> EP
+    EP --> LB
+    EP --> HC
+    EP --> RT
+    EP --> TM
+    
+    %% Server Processing
+    EP --> SA
+    SA --> GS
+    GS --> SH
+    SH --> WP
+    WP --> BL
+    
+    %% Stream Type Examples
+    S1 -.-> UR
+    S2 -.-> SS
+    S3 -.-> CS
+    S4 -.-> BS
+    S5 -.-> UR
+    
+    %% Styling
+    classDef clientStyle fill:#E3F2FD,stroke:#1976D2,stroke-width:2px
+    classDef http2Style fill:#F3E5F5,stroke:#7B1FA2,stroke-width:2px
+    classDef frameStyle fill:#E8F5E8,stroke:#388E3C,stroke-width:2px
+    classDef meshStyle fill:#FFF3E0,stroke:#F57C00,stroke-width:2px
+    classDef serverStyle fill:#FFEBEE,stroke:#D32F2F,stroke-width:2px
+    classDef streamStyle fill:#F1F8E9,stroke:#689F38,stroke-width:2px
+    
+    class CA,GC,CM,SP clientStyle
+    class H2C,S1,S2,S3,S4,S5,FC,HP http2Style
+    class HF,DF,WF,RF,SF,PF frameStyle
+    class EP,LB,HC,RT,TM meshStyle
+    class SA,GS,SH,WP,BL serverStyle
+    class UR,SS,CS,BS streamStyle
